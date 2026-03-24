@@ -1,0 +1,58 @@
+{
+  "models": [
+    {
+      "name": "AURA Chat 1B",
+      "modelId": "HawkFranklin-Research/AURA-models",
+      "modelFile": "aura-chat-1b-int4.litertlm",
+      "description": "A compact on-device chat model based on [Google Gemma 3 1B IT](https://huggingface.co/google/Gemma-3-1B-IT), optimized for mobile use with 4-bit quantization.",
+      "sizeInBytes": 584417280,
+      "minDeviceMemoryInGb": 6,
+      "commitHash": "main",
+      "url": "https://huggingface.co/HawkFranklin-Research/AURA-models/resolve/main/aura-chat-1b-int4.litertlm?download=true",
+      "defaultConfig": {
+        "topK": 64,
+        "topP": 0.95,
+        "temperature": 1.0,
+        "maxTokens": 1024,
+        "accelerators": "cpu"
+      },
+      "taskTypes": [
+        "llm_chat",
+        "llm_prompt_lab"
+      ],
+      "bestForTaskTypes": [
+        "llm_chat",
+        "llm_prompt_lab"
+      ]
+    },
+    {
+      "name": "AURA Vision 2B",
+      "modelId": "HawkFranklin-Research/AURA-models",
+      "modelFile": "aura-vision-2b-int4.litertlm",
+      "description": "A multimodal on-device model based on [Google Gemma 3n E2B](https://ai.google.dev/gemma/docs/gemma-3n) with support for text, vision, and audio inputs.",
+      "sizeInBytes": 3655827456,
+      "minDeviceMemoryInGb": 8,
+      "commitHash": "main",
+      "url": "https://huggingface.co/HawkFranklin-Research/AURA-models/resolve/main/aura-vision-2b-int4.litertlm?download=true",
+      "llmSupportImage": true,
+      "llmSupportAudio": true,
+      "defaultConfig": {
+        "topK": 64,
+        "topP": 0.95,
+        "temperature": 1.0,
+        "maxTokens": 4096,
+        "accelerators": "cpu"
+      },
+      "taskTypes": [
+        "llm_chat",
+        "llm_prompt_lab",
+        "llm_ask_image",
+        "llm_ask_audio"
+      ],
+      "bestForTaskTypes": [
+        "llm_ask_image",
+        "llm_ask_audio"
+      ]
+    }
+  ]
+}
