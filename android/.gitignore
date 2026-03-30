@@ -30,3 +30,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+keystore.properties
+keystore/*.jks
+keystore/*.keystore
+keystore/*.pem

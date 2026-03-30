@@ -1,53 +1,38 @@
 ===================================================================
-GOOGLE PLAY STORE LISTING - HAWKFRANKLIN RESEARCH
-App Name: AURA - Local AI Research Lab
+GOOGLE PLAY STORE LISTING - HAWKFRANKLIN
 ===================================================================
 
 [APP TITLE] (30 chars max)
-AURA: Private Local AI
+HawkFranklin
 
 [SHORT DESCRIPTION] (80 chars max)
-Run open-source AI models locally. Private, offline, and ad-free.
+Clinical research data collection and expert review workflows.
 
-[FULL DESCRIPTION] (4000 chars max)
-AURA (Android Utility for Runtime AI) is a professional-grade environment for running open-source Small Language Models (SLMs) locally on your Android device.
+[FULL DESCRIPTION] (draft)
+HawkFranklin is an internal clinical research application for structured data collection, expert review, and project-based study participation.
 
-Designed by HawkFranklin Research, AURA provides a secure sandbox for researchers, developers, and enthusiasts to experiment with on-device AI without relying on cloud servers.
+The app is designed for clinicians and physicians who contribute labeled judgments, review cases, and participate in active research programs organized by HawkFranklin Research.
 
-🚀 KEY FEATURES
+Current starter build capabilities:
 
-• Pure Local Intelligence: Powered by models like Gemma 3, Qwen 2.5, DeepSeek R1 Distill, and Phi-4 Mini.
-• Privacy First: All inference happens directly on your device. Your prompts and data never leave your phone.
-• Offline Capable: Once models are downloaded, no internet connection is required for chat or analysis.
-• Research Optimized: Built for prompt engineering, latency testing, and on-device evaluations.
-• Completely Ad-Free: A pure tool for science and productivity. No distractions, no tracking.
-• Open Source Transparency: Inspect the code, verify privacy claims, and contribute improvements.
+- managed sign-in and onboarding placeholders
+- a project dashboard with active research programs
+- a flashcard-style dermatology review flow
+- structured answer capture for each reviewed case
+- per-user counters for reviewed and submitted cases
 
-⚠️ SYSTEM REQUIREMENTS
-AURA runs high-performance AI models natively using hardware acceleration.
-• RAM: 8GB or higher is strongly recommended. (Devices with 4GB-6GB may experience crashes or slow tokens/sec).
-• Processor: Modern Snapdragon 8 Gen 1+ / Tensor G2 or newer recommended for optimal speed.
+The long-term goal is to support decentralized, expert-driven research workflows where physicians contribute judgments on curated case material in a standardized mobile experience.
 
-🧪 COMING SOON (ROADMAP)
-We are actively developing advanced features for the next release:
-• Chat with PDF & Documents (RAG)
-• Real-time Multi-lingual Translation
-• Voice-to-Action agents
-• Hovering assistant icon (optional overlay)
-
-OPEN SOURCE INITIATIVE
-AURA is proudly open-source. We believe in democratizing access to powerful local AI. Inspect the code, contribute, or build your own research tools.
-
-Note: This app is intended for research and internal testing purposes.
+This application is intended for internal and controlled research use.
 
 [GRAPHIC ASSETS CHECKLIST]
-- App Icon: 512x512 png (32-bit color)
-- Feature Graphic: 1024x500 jpg or png (No alpha)
-- Screenshots: 16:9 aspect ratio recommended (Minimum 2)
+- App Icon: 512x512 PNG
+- Feature Graphic: 1024x500 JPG or PNG
+- Phone Screenshots: minimum 2
 
 [PRIVACY POLICY URL]
-https://hawkfranklin.com/privacy-policy-aura (You must create this page, even if it just says "We collect nothing.")
+REPLACE_WITH_HAWKFRANKLIN_PRIVACY_POLICY_URL
 
-[DATA SAFETY DECLARATION ANSWERS]
-1. Does your app collect or share any user data? -> NO.
-   (Even though you download models, you do not collect user data sent to a server).
+[NOTES]
+- Replace this draft with final compliance and privacy language before submission.
+- Make sure the Play Data Safety answers match the actual Firebase and backend architecture in the release build.

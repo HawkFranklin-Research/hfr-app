@@ -30,6 +30,9 @@ val keystoreProperties = Properties()
 if (keystorePropertiesFile.exists()) {
   keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
+val hasReleaseSigning =
+    listOf("keyAlias", "keyPassword", "storeFile", "storePassword")
+        .all { keystoreProperties[it] != null }
 
 android {
   namespace = "com.hawkfranklin.aura"
@@ -51,12 +54,14 @@ android {
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
 
-  signingConfigs {
-    create("release") {
-      keyAlias = keystoreProperties["keyAlias"] as String
-      keyPassword = keystoreProperties["keyPassword"] as String
-      storeFile = file(keystoreProperties["storeFile"] as String)
-      storePassword = keystoreProperties["storePassword"] as String
+  if (hasReleaseSigning) {
+    signingConfigs {
+      create("release") {
+        keyAlias = keystoreProperties["keyAlias"] as String
+        keyPassword = keystoreProperties["keyPassword"] as String
+        storeFile = file(keystoreProperties["storeFile"] as String)
+        storePassword = keystoreProperties["storePassword"] as String
+      }
     }
   }
 
@@ -64,7 +69,9 @@ android {
     release {
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-      signingConfig = signingConfigs.getByName("release")
+      if (hasReleaseSigning) {
+        signingConfig = signingConfigs.getByName("release")
+      }
     }
   }
   compileOptions {
