@@ -25,6 +25,11 @@ plugins {
   alias(libs.plugins.kotlin.compose)
 }
 
+val hasGoogleServicesJson = file("google-services.json").exists()
+if (hasGoogleServicesJson) {
+  apply(plugin = "com.google.gms.google-services")
+}
+
 val keystorePropertiesFile = rootProject.file("keystore.properties")
 val keystoreProperties = Properties()
 if (keystorePropertiesFile.exists()) {
@@ -113,6 +118,8 @@ dependencies {
   implementation(libs.androidx.splashscreen)
   implementation(platform(libs.firebase.bom))
   implementation(libs.firebase.analytics)
+  implementation(libs.firebase.auth)
+  implementation(libs.firebase.firestore)
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)

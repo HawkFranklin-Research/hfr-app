@@ -217,9 +217,16 @@ private fun AuthGateScreen(onContinue: () -> Unit) {
         .navigationBarsPadding()
         .padding(24.dp),
     verticalArrangement = Arrangement.SpaceBetween,
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
-      Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+    Column(
+      verticalArrangement = Arrangement.spacedBy(18.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+      ) {
         Image(
           painter = painterResource(R.drawable.hawkfranklin_logo),
           contentDescription = "HawkFranklin logo",
@@ -246,25 +253,37 @@ private fun AuthGateScreen(onContinue: () -> Unit) {
         Column(
           modifier = Modifier.padding(22.dp),
           verticalArrangement = Arrangement.spacedBy(14.dp),
+          horizontalAlignment = Alignment.CenterHorizontally,
         ) {
           Text(
             "Clinical contribution, structured like an internal trial feed.",
             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+            textAlign = TextAlign.Center,
           )
           Text(
             "Physicians and clinicians sign in, join research projects, and answer flash-card style tasks built from open datasets treated like live review queues.",
             style = MaterialTheme.typography.bodyLarge.copy(
               color = MaterialTheme.colorScheme.onSurfaceVariant,
             ),
+            textAlign = TextAlign.Center,
           )
-          Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            AuthChip("Google auth gate")
-            AuthChip("One-time onboarding")
-            AuthChip("Project panels")
+          Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+              Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                AuthChip("Google auth gate")
+                AuthChip("One-time onboarding")
+              }
+              AuthChip("Project panels")
+            }
           }
         }
       }
 
+      /*
       Card(
         shape = RoundedCornerShape(24.dp),
         colors =
@@ -299,11 +318,12 @@ private fun AuthGateScreen(onContinue: () -> Unit) {
           }
         }
       }
+      */
     }
 
     Button(
       onClick = onContinue,
-      modifier = Modifier.fillMaxWidth().height(58.dp),
+      modifier = Modifier.fillMaxWidth().height(58.dp).padding(horizontal = 12.dp),
       shape = RoundedCornerShape(18.dp),
       colors =
         ButtonDefaults.buttonColors(
@@ -373,12 +393,16 @@ private fun OnboardingScreen(
     Text(
       "One-time onboarding",
       style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Black),
+      modifier = Modifier.fillMaxWidth(),
+      textAlign = TextAlign.Center,
     )
     Text(
       "This profile is the placeholder that later maps to Firebase Auth plus Firestore user records.",
       style = MaterialTheme.typography.bodyLarge.copy(
         color = MaterialTheme.colorScheme.onSurfaceVariant
       ),
+      modifier = Modifier.fillMaxWidth(),
+      textAlign = TextAlign.Center,
     )
 
     OutlinedTextField(
@@ -796,7 +820,11 @@ private fun ProjectFlashcardScreen(
         modifier = Modifier.fillMaxSize(),
       ) {
         Column(
-          modifier = Modifier.fillMaxSize().padding(22.dp),
+          modifier =
+            Modifier
+              .fillMaxSize()
+              .verticalScroll(rememberScrollState())
+              .padding(22.dp),
           verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
           Row(
