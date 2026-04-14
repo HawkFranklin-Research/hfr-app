@@ -1,8 +1,54 @@
 import React, { useState } from 'react'
 import { X } from 'lucide-react'
+import { auth } from '../config/firebase'
+import { 
+  signInWithPopup, 
+  GoogleAuthProvider, 
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut 
+} from 'firebase/auth'
 
 export default function AuthPanel({ isOpen, onClose, isAuthenticated, onLogin, onLogout }) {
   const [tab, setTab] = useState('login')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState(null)
+
+  const handleGoogleLogin = async () => {
+    try {
+      const provider = new GoogleAuthProvider()
+      await signInWithPopup(auth, provider)
+      onLogin()
+      onClose()
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  const handleEmailAuth = async () => {
+    try {
+      setError(null)
+      if (tab === 'login') {
+        await signInWithEmailAndPassword(auth, email, password)
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password)
+      }
+      onLogin()
+      onClose()
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth)
+      onLogout()
+    } catch (err) {
+      setError(err.message)
+    }
+  }
 
   return (
     <>
@@ -30,28 +76,50 @@ export default function AuthPanel({ isOpen, onClose, isAuthenticated, onLogin, o
               >Register</div>
             </div>
 
+            {error && <p style={{ color: '#ef4444', fontSize: '13px', marginBottom: '16px', background: '#fee2e2', padding: '10px', borderRadius: '8px' }}>{error}</p>}
+
             <div style={{ marginBottom: '20px' }}>
               <label style={styles.label}>Email Address</label>
-              <input type="email" style={styles.input} placeholder="clinician@example.com" />
+              <input 
+                type="email" 
+                style={styles.input} 
+                placeholder="clinician@example.com" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
             <div style={{ marginBottom: '20px' }}>
               <label style={styles.label}>Password</label>
-              <input type="password" style={styles.input} placeholder="••••••••" />
+              <input 
+                type="password" 
+                style={styles.input} 
+                placeholder="••••••••" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
 
-            <button className="btn-primary" onClick={onLogin}>Sign In</button>
+            <button className="btn-primary" onClick={handleEmailAuth} style={{ width: '100%' }}>
+              {tab === 'login' ? 'Sign In' : 'Register'}
+            </button>
 
             <div style={styles.divider}>OR CONTINUE WITH</div>
 
-            <button className="btn-secondary" style={styles.btnGoogle} onClick={onLogin}>
+            <button className="btn-secondary" style={{ ...styles.btnGoogle, width: '100%' }} onClick={handleGoogleLogin}>
               Google
             </button>
           </div>
         ) : (
           <div style={styles.profileView}>
-            <div style={styles.avatar}>DR</div>
-            <h3 style={{ fontSize: '20px', marginBottom: '5px' }}>Dr. Clinician</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '30px' }}>clinician@hawkfranklin.com</p>
+            <div style={styles.avatar}>
+              {auth.currentUser?.displayName?.[0] || auth.currentUser?.email?.[0] || 'DR'}
+            </div>
+            <h3 style={{ fontSize: '20px', marginBottom: '5px' }}>
+              {auth.currentUser?.displayName || 'Dr. Clinician'}
+            </h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '30px' }}>
+              {auth.currentUser?.email}
+            </p>
             
             <div style={{ width: '100%', marginBottom: '20px' }}>
               <div style={styles.statRow}>
@@ -64,7 +132,7 @@ export default function AuthPanel({ isOpen, onClose, isAuthenticated, onLogin, o
               </div>
             </div>
 
-            <button className="btn-secondary" style={{ marginTop: 'auto' }} onClick={onLogout}>Sign Out</button>
+            <button className="btn-secondary" style={{ marginTop: 'auto', width: '100%' }} onClick={handleLogout}>Sign Out</button>
           </div>
         )}
       </aside>
@@ -94,7 +162,8 @@ const styles = {
   input: {
     width: '100%', padding: '16px', borderRadius: '12px',
     background: '#FFFFFF', border: '1px solid var(--glass-border)',
-    color: 'var(--text-main)', fontSize: '16px', outline: 'none'
+    color: 'var(--text-main)', fontSize: '16px', outline: 'none',
+    boxSizing: 'border-box'
   },
   divider: { textAlign: 'center', margin: '30px 0', color: 'var(--text-muted)', fontSize: '12px' },
   btnGoogle: { background: '#FFFFFF', color: 'var(--text-main)' },
@@ -106,5 +175,5 @@ const styles = {
     fontSize: '32px', fontWeight: 700, marginBottom: '16px', color: '#000',
     boxShadow: '0 12px 24px rgba(34, 211, 238, 0.14)'
   },
-  statRow: { display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid var(--glass-border)' }
+  statRow: { display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid var(--glass-border)', width: '100%' }
 }

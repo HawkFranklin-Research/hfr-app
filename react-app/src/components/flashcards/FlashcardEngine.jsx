@@ -1,27 +1,72 @@
-import React, { useState } from 'react'
-import { ArrowLeft, CheckCircle } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { ArrowLeft, CheckCircle, Loader2 } from 'lucide-react'
+import { db, auth } from '../../config/firebase'
+import { collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore'
 
 export default function FlashcardEngine({ project, onExit }) {
   const [index, setIndex] = useState(0)
+  const [cards, setCards] = useState([])
+  const [loading, setLoading] = useState(true)
   const [isSuccessAnim, setIsSuccessAnim] = useState(false)
 
-  const cards = [
-    {
-      q: "Patient presents with asymptomatic irregular macular lesion on the right forearm.",
-      desc: "Dimensions: 8mm x 6mm. Borders are distinct but irregular. Color variation present. What is the most likely initial step in management?",
-      image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=800&auto=format&fit=crop",
-      options: ['Reassurance and observation', 'Cryotherapy', 'Excisional biopsy', 'Topical fluorouracil']
-    },
-    {
-      q: "32-year-old male with sudden onset chest pain radiating to left arm.",
-      desc: "Patient appears diaphoretic. ECG shows ST elevation in leads II, III, aVF. What is the diagnosis?",
-      image: null,
-      options: ['Anterior MI', 'Inferior MI', 'Pericarditis', 'Pulmonary Embolism']
-    }
-  ]
+  useEffect(() => {
+    const fetchCases = async () => {
+      try {
+        // Find project document to get its ID if project passed is just a name
+        const projectsSnap = await getDocs(collection(db, 'projects'))
+        const projDoc = projectsSnap.docs.find(d => d.data().name === project || d.id === project)
+        const projId = projDoc ? projDoc.id : 'derma_ai'
 
-  const handleSelect = (idx) => {
+        const querySnapshot = await getDocs(collection(db, `projects/${projId}/questionnaire`))
+        const caseData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          q: doc.data().prompt,
+          desc: doc.data().helper,
+          image: doc.data().imageUrl || null,
+          options: doc.data().options || []
+        }))
+        
+        if (caseData.length === 0) {
+          // Fallback if DB empty
+          setCards([
+            {
+              id: 'fallback-1',
+              q: "Patient presents with asymptomatic irregular macular lesion on the right forearm.",
+              desc: "Dimensions: 8mm x 6mm. Borders are distinct but irregular. Color variation present. What is the most likely initial step in management?",
+              image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=800&auto=format&fit=crop",
+              options: ['Reassurance and observation', 'Cryotherapy', 'Excisional biopsy', 'Topical fluorouracil']
+            }
+          ])
+        } else {
+          setCards(caseData)
+        }
+      } catch (err) {
+        console.error("Error fetching cases:", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchCases()
+  }, [project])
+
+  const handleSelect = async (optionIndex) => {
     setIsSuccessAnim(true)
+    
+    // Save response to Firebase
+    try {
+      await addDoc(collection(db, 'responses'), {
+        uid: auth.currentUser?.uid,
+        userEmail: auth.currentUser?.email,
+        projectId: project,
+        questionId: cards[index].id || index,
+        questionTitle: cards[index].q,
+        answer: cards[index].options[optionIndex],
+        timestamp: serverTimestamp()
+      })
+    } catch (err) {
+      console.error("Error saving response:", err)
+    }
+
     setTimeout(() => {
       setIsSuccessAnim(false)
       if (index < cards.length - 1) {
@@ -33,6 +78,13 @@ export default function FlashcardEngine({ project, onExit }) {
     }, 800)
   }
 
+  if (loading) return (
+    <main className="view-container" style={styles.center}>
+      <Loader2 className="animate-spin" size={40} color="var(--accent-cyan)"/>
+      <p style={{ marginTop: '16px', color: 'var(--text-muted)' }}>Loading cases...</p>
+    </main>
+  )
+  
   const card = cards[index]
 
   return (
@@ -54,12 +106,16 @@ export default function FlashcardEngine({ project, onExit }) {
         <p style={{ color: 'var(--text-muted)', lineHeight: 1.6, fontSize: '15px', marginBottom: '24px' }}>{card.desc}</p>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: 'auto' }}>
-          {card.options.map((opt, i) => (
-            <button key={i} style={styles.optionBtn} onClick={() => handleSelect(i)}>
-              <div style={styles.optionLabel}>{String.fromCharCode(65 + i)}</div>
-              <span>{opt}</span>
-            </button>
-          ))}
+          {card.options && card.options.length > 0 ? (
+            card.options.map((opt, i) => (
+              <button key={i} style={styles.optionBtn} onClick={() => handleSelect(i)}>
+                <div style={styles.optionLabel}>{String.fromCharCode(65 + i)}</div>
+                <span>{opt}</span>
+              </button>
+            ))
+          ) : (
+            <p style={{ color: 'var(--text-muted)', textAlign: 'center' }}>No options provided for this case.</p>
+          )}
         </div>
 
         {isSuccessAnim && (
@@ -73,6 +129,7 @@ export default function FlashcardEngine({ project, onExit }) {
 }
 
 const styles = {
+  center: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' },
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' },
   backBtn: { background: 'none', border: 'none', cursor: 'pointer' },
   pill: {

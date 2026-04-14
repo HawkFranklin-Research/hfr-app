@@ -27,6 +27,10 @@ android-capacitor-old.tar.gz
 android/app/google-services.json
 .codex
 tmp/mobile-shots/
+backend/service-account.json
+backend/app/__pycache__/
+react-app/.env
+react-app/.firebase/
 
 # Editor directories and files
 .vscode/*

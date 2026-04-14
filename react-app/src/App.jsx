@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import TopBar from './components/TopBar'
 import Dashboard from './components/Dashboard'
 import AuthPanel from './components/AuthPanel'
 import ConsentModal from './components/ConsentModal'
 import FlashcardEngine from './components/flashcards/FlashcardEngine'
+import { auth } from './config/firebase'
+import { onAuthStateChanged } from 'firebase/auth'
 
 function App() {
   const [view, setView] = useState('dashboard') // 'dashboard' | 'flashcards'
@@ -13,7 +15,16 @@ function App() {
   const [isConsentOpen, setIsConsentOpen] = useState(false)
   const [pendingProject, setPendingProject] = useState(null)
   
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser)
+    })
+    return () => unsubscribe()
+  }, [])
+
+  const isAuthenticated = !!user
 
   const handleProjectClick = (project) => {
     setPendingProject(project)
@@ -58,9 +69,8 @@ function App() {
         isOpen={isAuthOpen} 
         onClose={() => setIsAuthOpen(false)}
         isAuthenticated={isAuthenticated}
-        onLogin={() => setIsAuthenticated(true)}
+        onLogin={() => {}} // Now handled by onAuthStateChanged
         onLogout={() => {
-          setIsAuthenticated(false)
           setView('dashboard')
         }}
       />
