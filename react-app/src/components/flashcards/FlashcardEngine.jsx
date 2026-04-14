@@ -75,24 +75,42 @@ export default function FlashcardEngine({ project, onExit }) {
 const styles = {
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' },
   backBtn: { background: 'none', border: 'none', cursor: 'pointer' },
-  pill: { background: 'rgba(255,255,255,0.1)', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, color: 'var(--accent-cyan)', fontFamily: 'Inter' },
-  cardContainer: { flex: 1, display: 'flex', flexDirection: 'column', padding: '24px', position: 'relative', overflow: 'hidden' },
+  pill: {
+    background: 'var(--surface-cyan)',
+    padding: '6px 16px',
+    borderRadius: '20px',
+    fontSize: '12px',
+    fontWeight: 600,
+    color: 'var(--accent-cyan-dark)',
+    fontFamily: 'Inter',
+    border: '1px solid rgba(34, 211, 238, 0.18)'
+  },
+  cardContainer: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '24px',
+    position: 'relative',
+    overflow: 'hidden',
+    background: 'linear-gradient(180deg, #FFFFFF 0%, #FBFBFC 100%)',
+    boxShadow: 'var(--shadow-soft)'
+  },
   imageWrapper: { width: '100%', height: '220px', borderRadius: '16px', overflow: 'hidden', marginBottom: '20px' },
   image: { width: '100%', height: '100%', objectFit: 'cover' },
   optionBtn: { 
     display: 'flex', alignItems: 'center', padding: '16px', borderRadius: '16px',
-    background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)',
+    background: 'var(--surface-neutral)', border: '1px solid var(--glass-border)',
     color: 'var(--text-main)', fontSize: '15px', fontWeight: 500, cursor: 'pointer',
     textAlign: 'left', fontFamily: 'Inter'
   },
   optionLabel: {
-    width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(255,255,255,0.1)',
+    width: '28px', height: '28px', borderRadius: '8px', background: 'var(--surface-cream)',
     display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '16px',
     fontFamily: 'Outfit', fontWeight: 700, color: 'var(--accent-gold)'
   },
   successOverlay: {
     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-    background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.2) 0%, transparent 100%)',
+    background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.16) 0%, rgba(255, 255, 255, 0.78) 100%)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     animation: 'fadeIn 0.2s'
   }

@@ -75,15 +75,16 @@ export default function AuthPanel({ isOpen, onClose, isAuthenticated, onLogin, o
 const styles = {
   overlay: {
     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-    background: 'rgba(0,0,0,0.5)', zIndex: 199, transition: 'opacity 0.4s'
+    background: 'rgba(20, 20, 22, 0.16)', zIndex: 199, transition: 'opacity 0.4s'
   },
   panel: {
     position: 'absolute', top: 0, width: '85%', maxWidth: '400px', height: '100%',
-    background: 'rgba(20, 20, 30, 0.95)', backdropFilter: 'blur(20px)',
+    background: 'rgba(255, 255, 255, 0.94)', backdropFilter: 'blur(20px)',
+    borderLeft: '1px solid var(--glass-border)',
     zIndex: 200, display: 'flex', flexDirection: 'column', 
     padding: 'env(safe-area-inset-top, 40px) 24px 24px',
     transition: 'right 0.4s cubic-bezier(0.16, 1, 0.3, 1)', 
-    boxShadow: '-10px 0 30px rgba(0, 0, 0, 0.5)'
+    boxShadow: '-16px 0 32px rgba(20, 20, 22, 0.08)'
   },
   header: { display: 'flex', alignItems: 'center', marginBottom: '40px' },
   closeBtn: { background: 'none', border: 'none', cursor: 'pointer', padding: '8px', marginLeft: '-8px' },
@@ -92,17 +93,18 @@ const styles = {
   label: { display: 'block', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase' },
   input: {
     width: '100%', padding: '16px', borderRadius: '12px',
-    background: 'rgba(0,0,0,0.2)', border: '1px solid var(--glass-border)',
+    background: '#FFFFFF', border: '1px solid var(--glass-border)',
     color: 'var(--text-main)', fontSize: '16px', outline: 'none'
   },
   divider: { textAlign: 'center', margin: '30px 0', color: 'var(--text-muted)', fontSize: '12px' },
-  btnGoogle: { background: 'white', color: '#333' },
+  btnGoogle: { background: '#FFFFFF', color: 'var(--text-main)' },
   profileView: { display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '40px' },
   avatar: {
     width: '80px', height: '80px', borderRadius: '50%',
     background: 'linear-gradient(135deg, var(--accent-cyan), var(--accent-gold))',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: '32px', fontWeight: 700, marginBottom: '16px', color: '#000'
+    fontSize: '32px', fontWeight: 700, marginBottom: '16px', color: '#000',
+    boxShadow: '0 12px 24px rgba(34, 211, 238, 0.14)'
   },
   statRow: { display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid var(--glass-border)' }
 }

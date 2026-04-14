@@ -1,14 +1,17 @@
 import React from 'react'
 import { User, UserCheck } from 'lucide-react'
+import hawkFranklinLogo from '../assets/hawkfranklin-logo.png'
 
 export default function TopBar({ onProfileClick, isAuthenticated }) {
   return (
     <header style={styles.header}>
       <div style={styles.brand}>
-        <div style={styles.brandIcon}>HF</div>
-        <div>
+        <div style={styles.brandLogoFrame}>
+          <img src={hawkFranklinLogo} alt="HawkFranklin" style={styles.brandLogo} />
+        </div>
+        <div style={styles.brandText}>
           <h1 style={styles.title}>HawkFranklin</h1>
-          <p style={styles.subtitle}>Research Network</p>
+          <p style={styles.subtitle}>Research</p>
         </div>
       </div>
       <button style={styles.profileBtn} onClick={onProfileClick}>
@@ -31,26 +34,43 @@ const styles = {
     alignItems: 'center',
     gap: '12px'
   },
-  brandIcon: {
-    width: '40px', height: '40px',
-    background: 'linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dark))',
-    borderRadius: '12px',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontWeight: '800', fontSize: '20px', color: 'var(--text-dark)'
+  brandText: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+  brandLogoFrame: {
+    width: '48px',
+    height: '48px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0
+  },
+  brandLogo: {
+    width: '48px',
+    height: '48px',
+    objectFit: 'contain',
+    filter: 'drop-shadow(0 10px 18px rgba(197, 160, 40, 0.18))'
   },
   title: {
-    fontSize: '20px', letterSpacing: '0.5px'
+    fontSize: '20px',
+    letterSpacing: '0.5px'
   },
   subtitle: {
-    fontSize: '12px', color: 'var(--accent-cyan)',
-    fontFamily: 'Inter', textTransform: 'uppercase', letterSpacing: '1px'
+    fontSize: '12px',
+    color: 'var(--accent-gold-dark)',
+    fontFamily: 'Inter',
+    textTransform: 'uppercase',
+    letterSpacing: '1px'
   },
   profileBtn: {
     width: '44px', height: '44px',
     borderRadius: '50%',
-    background: 'var(--glass-bg)',
+    background: 'rgba(255, 255, 255, 0.9)',
     border: '1px solid var(--glass-border)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    cursor: 'pointer'
+    cursor: 'pointer',
+    boxShadow: 'var(--shadow-card)'
   }
 }

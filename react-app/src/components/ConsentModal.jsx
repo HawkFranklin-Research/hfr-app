@@ -21,15 +21,14 @@ export default function ConsentModal({ project, onAgree, onCancel }) {
 const styles = {
   overlay: {
     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-    background: 'rgba(10, 15, 26, 0.7)', backdropFilter: 'blur(8px)',
+    background: 'rgba(20, 20, 22, 0.16)', backdropFilter: 'blur(8px)',
     zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center',
     padding: '24px', animation: 'fadeIn 0.2s'
   },
   content: {
     width: '100%', maxWidth: '400px', padding: '32px 24px', textAlign: 'center',
+    background: 'linear-gradient(180deg, #FFFFFF 0%, #FBFBFC 100%)',
+    boxShadow: 'var(--shadow-soft)',
     animation: 'scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
   }
 }
-
-// In index.css we should add:
-// @keyframes scaleUp { from { transform: scale(0.9); } to { transform: scale(1); } }
