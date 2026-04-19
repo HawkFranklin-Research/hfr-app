@@ -1,0 +1,13 @@
+{
+  "projects": {},
+  "targets": {
+    "hfr-app-6c756": {
+      "hosting": {
+        "app-site": [
+          "hfr-app-6c756"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

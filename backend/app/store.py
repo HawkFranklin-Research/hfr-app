@@ -35,6 +35,17 @@ SEED_PROJECTS = [
         "questionCount": 3,
         "liveStatus": "Pilot workflow live",
     },
+    {
+        "id": "clinical_nov13",
+        "name": "Clinical Evaluation Nov13",
+        "shortDescription": "High-resolution case evaluation for specific disease differentials.",
+        "longDescription": "Professional clinical evaluation set using high-resolution images. Clinicians are asked to provide probability weights across 10 common skin conditions based on three distinct photographic views.",
+        "consentText": "By continuing, you agree to provide your professional medical opinion for these cases. This data will be used to benchmark clinical reasoning and model performance. All data is anonymized.",
+        "accentHex": "#D9A441",
+        "logoKey": "cardio",
+        "questionCount": 10,
+        "liveStatus": "Official Clinical Test",
+    },
 ]
 
 SEED_QUESTIONNAIRES = {
@@ -99,6 +110,258 @@ SEED_QUESTIONNAIRES = {
             "type": "text",
             "options": [],
         },
+    ],
+    "clinical_nov13": [
+        {
+            "id": "clin-nov13-1",
+            "title": "Case #1",
+            "prompt": "Assign probability percentages to the following differentials based on the 3 views provided.",
+            "helper": "Total should ideally be 100%, but we record each value independently.",
+            "type": "probability_grid",
+            "images": [
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_1_folliculitis%2Fview_1.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_1_folliculitis%2Fview_2.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_1_folliculitis%2Fview_3.png?alt=media"
+            ],
+            "options": [
+                "Folliculitis",
+                "Psoriasis",
+                "Tinea",
+                "Urticaria",
+                "Herpes Zoster",
+                "Drug Rash",
+                "Insect Bite",
+                "Irritant Contact Dermatitis",
+                "Allergic Contact Dermatitis",
+                "Eczema"
+            ],
+            "patientCode": "-1499518133606453111"
+        },
+        {
+            "id": "clin-nov13-2",
+            "title": "Case #2",
+            "prompt": "Assign probability percentages to the following differentials based on the 3 views provided.",
+            "helper": "Total should ideally be 100%, but we record each value independently.",
+            "type": "probability_grid",
+            "images": [
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_2_psoriasis%2Fview_1.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_2_psoriasis%2Fview_2.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_2_psoriasis%2Fview_3.png?alt=media"
+            ],
+            "options": [
+                "Folliculitis",
+                "Psoriasis",
+                "Tinea",
+                "Urticaria",
+                "Herpes Zoster",
+                "Drug Rash",
+                "Insect Bite",
+                "Irritant Contact Dermatitis",
+                "Allergic Contact Dermatitis",
+                "Eczema"
+            ],
+            "patientCode": "-1101392520794914783"
+        },
+        {
+            "id": "clin-nov13-3",
+            "title": "Case #3",
+            "prompt": "Assign probability percentages to the following differentials based on the 3 views provided.",
+            "helper": "Total should ideally be 100%, but we record each value independently.",
+            "type": "probability_grid",
+            "images": [
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_3_tinea%2Fview_1.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_3_tinea%2Fview_2.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_3_tinea%2Fview_3.png?alt=media"
+            ],
+            "options": [
+                "Folliculitis",
+                "Psoriasis",
+                "Tinea",
+                "Urticaria",
+                "Herpes Zoster",
+                "Drug Rash",
+                "Insect Bite",
+                "Irritant Contact Dermatitis",
+                "Allergic Contact Dermatitis",
+                "Eczema"
+            ],
+            "patientCode": "-460018212599407689"
+        },
+        {
+            "id": "clin-nov13-4",
+            "title": "Case #4",
+            "prompt": "Assign probability percentages to the following differentials based on the 3 views provided.",
+            "helper": "Total should ideally be 100%, but we record each value independently.",
+            "type": "probability_grid",
+            "images": [
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_4_urticaria%2Fview_1.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_4_urticaria%2Fview_2.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_4_urticaria%2Fview_3.png?alt=media"
+            ],
+            "options": [
+                "Folliculitis",
+                "Psoriasis",
+                "Tinea",
+                "Urticaria",
+                "Herpes Zoster",
+                "Drug Rash",
+                "Insect Bite",
+                "Irritant Contact Dermatitis",
+                "Allergic Contact Dermatitis",
+                "Eczema"
+            ],
+            "patientCode": "-1073544188024944010"
+        },
+        {
+            "id": "clin-nov13-5",
+            "title": "Case #5",
+            "prompt": "Assign probability percentages to the following differentials based on the 3 views provided.",
+            "helper": "Total should ideally be 100%, but we record each value independently.",
+            "type": "probability_grid",
+            "images": [
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_5_herpes_zoster%2Fview_1.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_5_herpes_zoster%2Fview_2.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_5_herpes_zoster%2Fview_3.png?alt=media"
+            ],
+            "options": [
+                "Folliculitis",
+                "Psoriasis",
+                "Tinea",
+                "Urticaria",
+                "Herpes Zoster",
+                "Drug Rash",
+                "Insect Bite",
+                "Irritant Contact Dermatitis",
+                "Allergic Contact Dermatitis",
+                "Eczema"
+            ],
+            "patientCode": "-2994712363562385732"
+        },
+        {
+            "id": "clin-nov13-6",
+            "title": "Case #6",
+            "prompt": "Assign probability percentages to the following differentials based on the 3 views provided.",
+            "helper": "Total should ideally be 100%, but we record each value independently.",
+            "type": "probability_grid",
+            "images": [
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_6_folliculitis%2Fview_1.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_6_folliculitis%2Fview_2.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_6_folliculitis%2Fview_3.png?alt=media"
+            ],
+            "options": [
+                "Folliculitis",
+                "Psoriasis",
+                "Tinea",
+                "Urticaria",
+                "Herpes Zoster",
+                "Drug Rash",
+                "Insect Bite",
+                "Irritant Contact Dermatitis",
+                "Allergic Contact Dermatitis",
+                "Eczema"
+            ],
+            "patientCode": "-1679661288171171796"
+        },
+        {
+            "id": "clin-nov13-7",
+            "title": "Case #7",
+            "prompt": "Assign probability percentages to the following differentials based on the 3 views provided.",
+            "helper": "Total should ideally be 100%, but we record each value independently.",
+            "type": "probability_grid",
+            "images": [
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_7_drug_rash%2Fview_1.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_7_drug_rash%2Fview_2.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_7_drug_rash%2Fview_3.png?alt=media"
+            ],
+            "options": [
+                "Folliculitis",
+                "Psoriasis",
+                "Tinea",
+                "Urticaria",
+                "Herpes Zoster",
+                "Drug Rash",
+                "Insect Bite",
+                "Irritant Contact Dermatitis",
+                "Allergic Contact Dermatitis",
+                "Eczema"
+            ],
+            "patientCode": "-194017562508969044"
+        },
+        {
+            "id": "clin-nov13-8",
+            "title": "Case #8",
+            "prompt": "Assign probability percentages to the following differentials based on the 3 views provided.",
+            "helper": "Total should ideally be 100%, but we record each value independently.",
+            "type": "probability_grid",
+            "images": [
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_8_insect_bite%2Fview_1.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_8_insect_bite%2Fview_2.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_8_insect_bite%2Fview_3.png?alt=media"
+            ],
+            "options": [
+                "Folliculitis",
+                "Psoriasis",
+                "Tinea",
+                "Urticaria",
+                "Herpes Zoster",
+                "Drug Rash",
+                "Insect Bite",
+                "Irritant Contact Dermatitis",
+                "Allergic Contact Dermatitis",
+                "Eczema"
+            ],
+            "patientCode": "-1248246033945054233"
+        },
+        {
+            "id": "clin-nov13-9",
+            "title": "Case #9",
+            "prompt": "Assign probability percentages to the following differentials based on the 3 views provided.",
+            "helper": "Total should ideally be 100%, but we record each value independently.",
+            "type": "probability_grid",
+            "images": [
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_9_psoriasis%2Fview_1.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_9_psoriasis%2Fview_2.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_9_psoriasis%2Fview_3.png?alt=media"
+            ],
+            "options": [
+                "Folliculitis",
+                "Psoriasis",
+                "Tinea",
+                "Urticaria",
+                "Herpes Zoster",
+                "Drug Rash",
+                "Insect Bite",
+                "Irritant Contact Dermatitis",
+                "Allergic Contact Dermatitis",
+                "Eczema"
+            ],
+            "patientCode": "-1964801097019886136"
+        },
+        {
+            "id": "clin-nov13-10",
+            "title": "Case #10",
+            "prompt": "Assign probability percentages to the following differentials based on the 3 views provided.",
+            "helper": "Total should ideally be 100%, but we record each value independently.",
+            "type": "probability_grid",
+            "images": [
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_10_irritant_contact_dermatitis%2Fview_1.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_10_irritant_contact_dermatitis%2Fview_2.png?alt=media",
+                "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_10_irritant_contact_dermatitis%2Fview_3.png?alt=media"
+            ],
+            "options": [
+                "Folliculitis",
+                "Psoriasis",
+                "Tinea",
+                "Urticaria",
+                "Herpes Zoster",
+                "Drug Rash",
+                "Insect Bite",
+                "Irritant Contact Dermatitis",
+                "Allergic Contact Dermatitis",
+                "Eczema"
+            ],
+            "patientCode": "-4920504467922873434"
+        }
     ],
 }
 

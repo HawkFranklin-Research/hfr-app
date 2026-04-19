@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { ArrowLeft, CheckCircle, Loader2 } from 'lucide-react'
+import { ArrowLeft, CheckCircle, Loader2, Info } from 'lucide-react'
 import { db, auth } from '../../config/firebase'
-import { collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore'
+import { collection, getDocs, addDoc, serverTimestamp, query, where } from 'firebase/firestore'
 
 export default function FlashcardEngine({ project, onExit }) {
   const [index, setIndex] = useState(0)
   const [cards, setCards] = useState([])
   const [loading, setLoading] = useState(true)
   const [isSuccessAnim, setIsSuccessAnim] = useState(false)
+  const [probabilities, setProbabilities] = useState({}) // For the new grid type
 
   useEffect(() => {
     const fetchCases = async () => {
@@ -23,20 +24,15 @@ export default function FlashcardEngine({ project, onExit }) {
           q: doc.data().prompt,
           desc: doc.data().helper,
           image: doc.data().imageUrl || null,
-          options: doc.data().options || []
+          images: doc.data().images || [], // For multi-view cases
+          options: doc.data().options || [],
+          type: doc.data().type || 'multiple_choice'
         }))
         
         if (caseData.length === 0) {
-          // Fallback if DB empty
-          setCards([
-            {
-              id: 'fallback-1',
-              q: "Patient presents with asymptomatic irregular macular lesion on the right forearm.",
-              desc: "Dimensions: 8mm x 6mm. Borders are distinct but irregular. Color variation present. What is the most likely initial step in management?",
-              image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=800&auto=format&fit=crop",
-              options: ['Reassurance and observation', 'Cryotherapy', 'Excisional biopsy', 'Topical fluorouracil']
-            }
-          ])
+          setCards([{
+            id: 'error', q: "No cases found", desc: "Please seed the database.", options: []
+          }])
         } else {
           setCards(caseData)
         }
@@ -49,10 +45,24 @@ export default function FlashcardEngine({ project, onExit }) {
     fetchCases()
   }, [project])
 
-  const handleSelect = async (optionIndex) => {
+  // Reset probabilities when index changes
+  useEffect(() => {
+    if (cards[index]?.type === 'probability_grid') {
+      const initial = {}
+      cards[index].options.forEach(opt => initial[opt] = 0)
+      setProbabilities(initial)
+    }
+  }, [index, cards])
+
+  const handleProbChange = (disease, val) => {
+    setProbabilities(prev => ({ ...prev, [disease]: parseInt(val) || 0 }))
+  }
+
+  const totalProb = Object.values(probabilities).reduce((a, b) => a + b, 0)
+
+  const handleSelect = async (answerData) => {
     setIsSuccessAnim(true)
     
-    // Save response to Firebase
     try {
       await addDoc(collection(db, 'responses'), {
         uid: auth.currentUser?.uid,
@@ -60,7 +70,7 @@ export default function FlashcardEngine({ project, onExit }) {
         projectId: project,
         questionId: cards[index].id || index,
         questionTitle: cards[index].q,
-        answer: cards[index].options[optionIndex],
+        answer: answerData,
         timestamp: serverTimestamp()
       })
     } catch (err) {
@@ -72,7 +82,7 @@ export default function FlashcardEngine({ project, onExit }) {
       if (index < cards.length - 1) {
         setIndex(prev => prev + 1)
       } else {
-        alert("Project data collection complete!")
+        alert("Evaluation complete! Thank you for your contribution.")
         onExit()
       }
     }, 800)
@@ -88,7 +98,7 @@ export default function FlashcardEngine({ project, onExit }) {
   const card = cards[index]
 
   return (
-    <main className="view-container" style={{ padding: '20px 24px' }}>
+    <main className="view-container" style={{ padding: '20px 24px', overflowY: 'auto' }}>
       <div style={styles.header}>
         <button style={styles.backBtn} onClick={onExit}><ArrowLeft color="var(--text-main)"/></button>
         <div style={styles.pill}>Case {index + 1} / {cards.length}</div>
@@ -96,27 +106,63 @@ export default function FlashcardEngine({ project, onExit }) {
       </div>
 
       <div className="glass-panel" style={styles.cardContainer}>
-        {card.image && (
+        {/* IMAGE VIEWS */}
+        {card.images && card.images.length > 0 ? (
+          <div style={styles.multiImageContainer}>
+            {card.images.map((img, i) => (
+              <div key={i} style={styles.smallImageWrapper}>
+                <img src={img} alt={`View ${i+1}`} style={styles.image} />
+                <span style={styles.imageLabel}>View {i+1}</span>
+              </div>
+            ))}
+          </div>
+        ) : card.image && (
           <div style={styles.imageWrapper}>
             <img src={card.image} alt="Case visual" style={styles.image} />
           </div>
         )}
         
-        <h3 style={{ fontSize: '20px', lineHeight: 1.4, marginBottom: '12px' }}>{card.q}</h3>
-        <p style={{ color: 'var(--text-muted)', lineHeight: 1.6, fontSize: '15px', marginBottom: '24px' }}>{card.desc}</p>
+        <h3 style={{ fontSize: '18px', lineHeight: 1.4, marginBottom: '8px' }}>{card.q}</h3>
+        <p style={{ color: 'var(--text-muted)', lineHeight: 1.5, fontSize: '14px', marginBottom: '20px' }}>{card.desc}</p>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: 'auto' }}>
-          {card.options && card.options.length > 0 ? (
-            card.options.map((opt, i) => (
-              <button key={i} style={styles.optionBtn} onClick={() => handleSelect(i)}>
+        {/* QUESTION TYPE LOGIC */}
+        {card.type === 'probability_grid' ? (
+          <div style={styles.gridContainer}>
+            <div style={{ ...styles.totalCounter, color: totalProb === 100 ? '#10B981' : 'var(--text-muted)' }}>
+               Total Probability: {totalProb}%
+            </div>
+            {card.options.map((opt, i) => (
+              <div key={i} style={styles.gridRow}>
+                <span style={styles.gridLabel}>{opt}</span>
+                <input 
+                  type="number" 
+                  min="0" max="100"
+                  value={probabilities[opt]}
+                  onChange={(e) => handleProbChange(opt, e.target.value)}
+                  style={styles.gridInput}
+                />
+                <span style={{ fontSize: '14px', marginLeft: '4px' }}>%</span>
+              </div>
+            ))}
+            <button 
+              className="button-primary" 
+              style={{ marginTop: '20px', width: '100%', padding: '14px' }}
+              onClick={() => handleSelect(probabilities)}
+              disabled={totalProb === 0}
+            >
+              Submit Probabilities
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: 'auto' }}>
+            {card.options.map((opt, i) => (
+              <button key={i} style={styles.optionBtn} onClick={() => handleSelect(opt)}>
                 <div style={styles.optionLabel}>{String.fromCharCode(65 + i)}</div>
                 <span>{opt}</span>
               </button>
-            ))
-          ) : (
-            <p style={{ color: 'var(--text-muted)', textAlign: 'center' }}>No options provided for this case.</p>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
 
         {isSuccessAnim && (
           <div style={styles.successOverlay}>
@@ -148,11 +194,14 @@ const styles = {
     flexDirection: 'column',
     padding: '24px',
     position: 'relative',
-    overflow: 'hidden',
     background: 'linear-gradient(180deg, #FFFFFF 0%, #FBFBFC 100%)',
-    boxShadow: 'var(--shadow-soft)'
+    boxShadow: 'var(--shadow-soft)',
+    minHeight: 'fit-content'
   },
   imageWrapper: { width: '100%', height: '220px', borderRadius: '16px', overflow: 'hidden', marginBottom: '20px' },
+  multiImageContainer: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '20px' },
+  smallImageWrapper: { position: 'relative', height: '100px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--glass-border)' },
+  imageLabel: { position: 'absolute', bottom: '4px', left: '4px', background: 'rgba(0,0,0,0.5)', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '4px' },
   image: { width: '100%', height: '100%', objectFit: 'cover' },
   optionBtn: { 
     display: 'flex', alignItems: 'center', padding: '16px', borderRadius: '16px',
@@ -165,10 +214,15 @@ const styles = {
     display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '16px',
     fontFamily: 'Outfit', fontWeight: 700, color: 'var(--accent-gold)'
   },
+  gridContainer: { display: 'flex', flexDirection: 'column', gap: '8px' },
+  gridRow: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--surface-neutral)', borderRadius: '12px' },
+  gridLabel: { fontSize: '14px', flex: 1, fontWeight: 500 },
+  gridInput: { width: '60px', padding: '8px', borderRadius: '8px', border: '1px solid var(--glass-border)', textAlign: 'right', fontFamily: 'Inter', fontWeight: 600 },
+  totalCounter: { textAlign: 'right', fontSize: '13px', fontWeight: 700, marginBottom: '8px' },
   successOverlay: {
     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
     background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.16) 0%, rgba(255, 255, 255, 0.78) 100%)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    animation: 'fadeIn 0.2s'
+    animation: 'fadeIn 0.2s', zIndex: 10
   }
 }
