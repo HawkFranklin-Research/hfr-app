@@ -12,6 +12,7 @@ function App() {
   const [activeProject, setActiveProject] = useState(null)
   
   const [isAuthOpen, setIsAuthOpen] = useState(false)
+  const [authPanelView, setAuthPanelView] = useState('menu')
   const [isConsentOpen, setIsConsentOpen] = useState(false)
   const [pendingProject, setPendingProject] = useState(null)
   
@@ -34,6 +35,7 @@ function App() {
   const handleConsentAgreed = () => {
     setIsConsentOpen(false)
     if (!isAuthenticated) {
+      setAuthPanelView('auth') // Direct to Login/Register
       setIsAuthOpen(true)
     } else {
       setActiveProject(pendingProject)
@@ -41,11 +43,16 @@ function App() {
     }
   }
 
+  const openSidebar = (mode = 'menu') => {
+    setAuthPanelView(mode)
+    setIsAuthOpen(true)
+  }
+
   return (
     <>
       {view === 'dashboard' && (
         <>
-          <TopBar onProfileClick={() => setIsAuthOpen(true)} isAuthenticated={isAuthenticated} />
+          <TopBar onProfileClick={() => openSidebar('menu')} isAuthenticated={isAuthenticated} />
           <Dashboard onProjectSelect={handleProjectClick} />
         </>
       )}
@@ -69,7 +76,15 @@ function App() {
         isOpen={isAuthOpen} 
         onClose={() => setIsAuthOpen(false)}
         isAuthenticated={isAuthenticated}
-        onLogin={() => {}} // Now handled by onAuthStateChanged
+        initialView={authPanelView}
+        onLogin={() => {
+          // If a project was pending, start it after successful login
+          if (pendingProject) {
+            setActiveProject(pendingProject)
+            setView('flashcards')
+            setPendingProject(null)
+          }
+        }}
         onLogout={() => {
           setView('dashboard')
         }}

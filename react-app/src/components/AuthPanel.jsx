@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { X, Globe, Shield, Award, BookOpen, ChevronRight, User, ExternalLink } from 'lucide-react'
 import { auth } from '../config/firebase'
 import { 
@@ -9,12 +9,19 @@ import {
   signOut 
 } from 'firebase/auth'
 
-export default function AuthPanel({ isOpen, onClose, isAuthenticated, onLogin, onLogout }) {
+export default function AuthPanel({ isOpen, onClose, isAuthenticated, onLogin, onLogout, initialView = 'menu' }) {
   const [view, setView] = useState('menu') // 'menu', 'about', 'validation', 'auth'
   const [tab, setTab] = useState('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
+
+  // Sync internal view with initialView prop when opening
+  useEffect(() => {
+    if (isOpen) {
+      setView(initialView)
+    }
+  }, [isOpen, initialView])
 
   const handleGoogleLogin = async () => {
     try {
@@ -86,6 +93,7 @@ export default function AuthPanel({ isOpen, onClose, isAuthenticated, onLogin, o
       return (
         <div style={styles.contentWrap}>
           <button style={styles.backLink} onClick={() => setView('menu')}><ArrowLeft size={16} /> Back</button>
+          <h2 style={{...styles.sectionTitle, fontSize: '18px', marginBottom: '20px'}}>Research Account</h2>
           <div style={styles.tabs}>
             <div style={{...styles.tab, color: tab === 'login' ? 'var(--accent-cyan)' : 'var(--text-muted)', borderBottomColor: tab === 'login' ? 'var(--accent-cyan)' : 'transparent'}} onClick={() => setTab('login')}>Sign In</div>
             <div style={{...styles.tab, color: tab === 'register' ? 'var(--accent-cyan)' : 'var(--text-muted)', borderBottomColor: tab === 'register' ? 'var(--accent-cyan)' : 'transparent'}} onClick={() => setTab('register')}>Register</div>
@@ -106,7 +114,7 @@ export default function AuthPanel({ isOpen, onClose, isAuthenticated, onLogin, o
         {isAuthenticated && (
           <div style={styles.profileSummary}>
             <div style={styles.avatar}>{auth.currentUser?.email?.[0].toUpperCase()}</div>
-            <div>
+            <div style={{flex: 1}}>
               <h3 style={{fontSize:'16px'}}>{auth.currentUser?.displayName || 'Clinician'}</h3>
               <p style={{fontSize:'12px', color:'var(--text-muted)'}}>{auth.currentUser?.email}</p>
             </div>
