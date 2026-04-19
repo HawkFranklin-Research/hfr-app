@@ -1,5 +1,5 @@
 import React from 'react'
-import { User, UserCheck } from 'lucide-react'
+import { User, UserCheck, Menu } from 'lucide-react'
 import hawkFranklinLogo from '../assets/hawkfranklin-logo.png'
 
 export default function TopBar({ onProfileClick, isAuthenticated }) {
@@ -15,7 +15,7 @@ export default function TopBar({ onProfileClick, isAuthenticated }) {
         </div>
       </div>
       <button style={styles.profileBtn} onClick={onProfileClick}>
-        {isAuthenticated ? <UserCheck color="var(--accent-cyan)" size={28} /> : <User color="var(--text-main)" size={28} />}
+        <Menu color="var(--text-main)" size={24} />
       </button>
     </header>
   )
@@ -26,21 +26,21 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '30px 24px', // Increased vertical padding
+    padding: '30px 24px',
     zIndex: 10
   },
   brand: {
     display: 'flex',
     alignItems: 'center',
-    gap: '16px' // Increased gap
+    gap: '16px'
   },
   brandText: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-start' // Left aligned for better legibility
+    alignItems: 'center' // Centered Research under Title
   },
   brandLogoFrame: {
-    width: '64px', // Increased size
+    width: '64px',
     height: '64px',
     display: 'flex',
     alignItems: 'center',
@@ -54,24 +54,26 @@ const styles = {
     filter: 'drop-shadow(0 12px 24px rgba(197, 160, 40, 0.25))'
   },
   title: {
-    fontSize: '32px', // Significantly larger
+    fontSize: '32px',
     fontWeight: 800,
     letterSpacing: '-0.5px',
     lineHeight: 1
   },
   subtitle: {
-    fontSize: '14px', // Larger subtitle
+    fontSize: '14px',
     fontWeight: 700,
     color: 'var(--accent-gold-dark)',
     fontFamily: 'Outfit',
     textTransform: 'uppercase',
-    letterSpacing: '3px',
-    marginTop: '2px'
+    letterSpacing: '5px', // More spacing for centered look
+    marginTop: '4px',
+    width: '100%',
+    textAlign: 'center'
   },
   profileBtn: {
-    width: '56px', // Increased button size
-    height: '56px',
-    borderRadius: '50%',
+    width: '52px',
+    height: '52px',
+    borderRadius: '16px',
     background: 'rgba(255, 255, 255, 0.95)',
     border: '1px solid var(--glass-border)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',

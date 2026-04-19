@@ -17,7 +17,6 @@ export default function FlashcardEngine({ project, onExit }) {
   const [lastPos, setLastPos] = useState({ x: 0, y: 0 })
   
   const [probabilities, setProbabilities] = useState({})
-  const containerRef = useRef(null)
 
   useEffect(() => {
     const fetchCases = async () => {
@@ -41,6 +40,25 @@ export default function FlashcardEngine({ project, onExit }) {
     }
     fetchCases()
   }, [project])
+
+  // NEW: Pre-fetching "Liquid Smooth" Logic
+  useEffect(() => {
+    if (!cards[index]) return;
+    
+    // 1. Preload ALL images for the current case
+    const currentImages = cards[index].images || [];
+    currentImages.forEach(url => {
+      const img = new Image();
+      img.src = url;
+    });
+
+    // 2. Preload the first view of the NEXT case
+    const nextCard = cards[index + 1];
+    if (nextCard && nextCard.images && nextCard.images.length > 0) {
+      const nextImg = new Image();
+      nextImg.src = nextCard.images[0];
+    }
+  }, [index, cards]);
 
   const resetViewer = useCallback(() => {
     setZoom(1)
@@ -79,16 +97,17 @@ export default function FlashcardEngine({ project, onExit }) {
   }
 
   const handleEnd = () => setIsDragging(false)
-
   const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.5, 4))
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.5, 1))
 
   const handleNav = (dir) => {
+    const card = cards[index]
+    const currentImages = card.images.length > 0 ? card.images : (card.image ? [card.image] : [])
     resetViewer()
     if (dir === 'next') {
-      setActiveImgIndex(prev => (prev === card.images.length - 1 ? 0 : prev + 1))
+      setActiveImgIndex(prev => (prev === currentImages.length - 1 ? 0 : prev + 1))
     } else {
-      setActiveImgIndex(prev => (prev === 0 ? card.images.length - 1 : prev - 1))
+      setActiveImgIndex(prev => (prev === 0 ? currentImages.length - 1 : prev - 1))
     }
   }
 
@@ -115,7 +134,7 @@ export default function FlashcardEngine({ project, onExit }) {
     setTimeout(() => {
       setIsSuccessAnim(false)
       if (index < cards.length - 1) setIndex(prev => prev + 1)
-      else { alert("Complete!"); onExit() }
+      else { alert("Evaluation complete!"); onExit() }
     }, 800)
   }
 
@@ -134,7 +153,6 @@ export default function FlashcardEngine({ project, onExit }) {
 
       <div className="glass-panel" style={styles.cardContainer}>
         
-        {/* ENLARGED FOCUSED VIEWER */}
         <div 
           style={styles.viewerFrame}
           onMouseDown={handleStart}
@@ -178,7 +196,6 @@ export default function FlashcardEngine({ project, onExit }) {
         <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '16px 0 8px' }}>{card.q}</h3>
         <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '20px' }}>{card.desc}</p>
         
-        {/* PROBABILITY GRID */}
         <div style={styles.gridContainer}>
           <div style={{ ...styles.totalCounter, color: totalProb === 100 ? '#10B981' : '#F59E0B' }}>
              Total Study Probability: {totalProb}%
@@ -216,14 +233,8 @@ const styles = {
   pill: { background: 'var(--surface-cyan)', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, color: 'var(--accent-cyan-dark)' },
   cardContainer: { padding: '20px', background: '#FFF', borderRadius: '24px', boxShadow: 'var(--shadow-soft)' },
   viewerFrame: {
-    width: '100%', 
-    height: '500px', // INCREASED VERTICAL SIZE
-    maxHeight: '60vh', // Mobile safeguard
-    background: '#0F172A', 
-    borderRadius: '20px',
-    position: 'relative', 
-    overflow: 'hidden', 
-    touchAction: 'none'
+    width: '100%', height: '500px', maxHeight: '60vh', background: '#0F172A', borderRadius: '20px',
+    position: 'relative', overflow: 'hidden', touchAction: 'none'
   },
   imageContainer: { width: '100%', height: '100%', transition: 'transform 0.1s ease-out' },
   mainImage: { width: '100%', height: '100%', objectFit: 'contain', userSelect: 'none' },
