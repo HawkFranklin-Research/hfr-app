@@ -1,41 +1,38 @@
-import React, { useState, useEffect } from 'react'
-import { ArrowLeft, CheckCircle, Loader2, Info } from 'lucide-react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
+import { ArrowLeft, CheckCircle, Loader2, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react'
 import { db, auth } from '../../config/firebase'
-import { collection, getDocs, addDoc, serverTimestamp, query, where } from 'firebase/firestore'
+import { collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore'
 
 export default function FlashcardEngine({ project, onExit }) {
   const [index, setIndex] = useState(0)
   const [cards, setCards] = useState([])
   const [loading, setLoading] = useState(true)
   const [isSuccessAnim, setIsSuccessAnim] = useState(false)
-  const [probabilities, setProbabilities] = useState({}) // For the new grid type
+  
+  // Image Viewer State
+  const [activeImgIndex, setActiveImgIndex] = useState(0)
+  const [zoom, setZoom] = useState(1)
+  const [offset, setOffset] = useState({ x: 0, y: 0 })
+  const [isDragging, setIsDragging] = useState(false)
+  const [lastPos, setLastPos] = useState({ x: 0, y: 0 })
+  
+  const [probabilities, setProbabilities] = useState({})
+  const containerRef = useRef(null)
 
   useEffect(() => {
     const fetchCases = async () => {
       try {
-        // Find project document to get its ID if project passed is just a name
-        const projectsSnap = await getDocs(collection(db, 'projects'))
-        const projDoc = projectsSnap.docs.find(d => d.data().name === project || d.id === project)
-        const projId = projDoc ? projDoc.id : 'derma_ai'
-
-        const querySnapshot = await getDocs(collection(db, `projects/${projId}/questionnaire`))
+        const querySnapshot = await getDocs(collection(db, `projects/derma_ai/questionnaire`))
         const caseData = querySnapshot.docs.map(doc => ({
           id: doc.id,
           q: doc.data().prompt,
           desc: doc.data().helper,
           image: doc.data().imageUrl || null,
-          images: doc.data().images || [], // For multi-view cases
+          images: doc.data().images || [], 
           options: doc.data().options || [],
           type: doc.data().type || 'multiple_choice'
         }))
-        
-        if (caseData.length === 0) {
-          setCards([{
-            id: 'error', q: "No cases found", desc: "Please seed the database.", options: []
-          }])
-        } else {
-          setCards(caseData)
-        }
+        setCards(caseData.length ? caseData : [{ id: 'error', q: "No cases", desc: "Seed DB", options: [] }])
       } catch (err) {
         console.error("Error fetching cases:", err)
       } finally {
@@ -45,14 +42,55 @@ export default function FlashcardEngine({ project, onExit }) {
     fetchCases()
   }, [project])
 
-  // Reset probabilities when index changes
+  const resetViewer = useCallback(() => {
+    setZoom(1)
+    setOffset({ x: 0, y: 0 })
+    setIsDragging(false)
+  }, [])
+
   useEffect(() => {
+    setActiveImgIndex(0)
+    resetViewer()
     if (cards[index]?.type === 'probability_grid') {
       const initial = {}
       cards[index].options.forEach(opt => initial[opt] = 0)
       setProbabilities(initial)
     }
-  }, [index, cards])
+  }, [index, cards, resetViewer])
+
+  const handleStart = (e) => {
+    if (zoom === 1) return
+    setIsDragging(true)
+    const touch = e.touches ? e.touches[0] : e
+    setLastPos({ x: touch.clientX, y: touch.clientY })
+  }
+
+  const handleMove = (e) => {
+    if (!isDragging || zoom === 1) return
+    const touch = e.touches ? e.touches[0] : e
+    const deltaX = touch.clientX - lastPos.x
+    const deltaY = touch.clientY - lastPos.y
+    
+    setOffset(prev => ({
+      x: prev.x + deltaX,
+      y: prev.y + deltaY
+    }))
+    setLastPos({ x: touch.clientX, y: touch.clientY })
+  }
+
+  const handleEnd = () => setIsDragging(false)
+
+  const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.5, 4))
+  const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.5, 1))
+
+  const handleNav = (dir) => {
+    resetViewer()
+    if (dir === 'next') {
+      setActiveImgIndex(prev => (prev === card.images.length - 1 ? 0 : prev + 1))
+    } else {
+      setActiveImgIndex(prev => (prev === 0 ? card.images.length - 1 : prev - 1))
+    }
+  }
 
   const handleProbChange = (disease, val) => {
     setProbabilities(prev => ({ ...prev, [disease]: parseInt(val) || 0 }))
@@ -62,40 +100,29 @@ export default function FlashcardEngine({ project, onExit }) {
 
   const handleSelect = async (answerData) => {
     setIsSuccessAnim(true)
-    
     try {
       await addDoc(collection(db, 'responses'), {
         uid: auth.currentUser?.uid,
         userEmail: auth.currentUser?.email,
-        projectId: project,
+        projectId: 'derma_ai',
         questionId: cards[index].id || index,
         questionTitle: cards[index].q,
         answer: answerData,
         timestamp: serverTimestamp()
       })
-    } catch (err) {
-      console.error("Error saving response:", err)
-    }
+    } catch (err) { console.error(err) }
 
     setTimeout(() => {
       setIsSuccessAnim(false)
-      if (index < cards.length - 1) {
-        setIndex(prev => prev + 1)
-      } else {
-        alert("Evaluation complete! Thank you for your contribution.")
-        onExit()
-      }
+      if (index < cards.length - 1) setIndex(prev => prev + 1)
+      else { alert("Complete!"); onExit() }
     }, 800)
   }
 
-  if (loading) return (
-    <main className="view-container" style={styles.center}>
-      <Loader2 className="animate-spin" size={40} color="var(--accent-cyan)"/>
-      <p style={{ marginTop: '16px', color: 'var(--text-muted)' }}>Loading cases...</p>
-    </main>
-  )
+  if (loading) return <div style={styles.center}><Loader2 className="animate-spin" size={40} color="var(--accent-cyan)" /></div>
   
   const card = cards[index]
+  const currentImages = card.images.length > 0 ? card.images : (card.image ? [card.image] : [])
 
   return (
     <main className="view-container" style={{ padding: '20px 24px', overflowY: 'auto' }}>
@@ -106,123 +133,125 @@ export default function FlashcardEngine({ project, onExit }) {
       </div>
 
       <div className="glass-panel" style={styles.cardContainer}>
-        {/* IMAGE VIEWS */}
-        {card.images && card.images.length > 0 ? (
-          <div style={styles.multiImageContainer}>
-            {card.images.map((img, i) => (
-              <div key={i} style={styles.smallImageWrapper}>
-                <img src={img} alt={`View ${i+1}`} style={styles.image} />
-                <span style={styles.imageLabel}>View {i+1}</span>
-              </div>
-            ))}
-          </div>
-        ) : card.image && (
-          <div style={styles.imageWrapper}>
-            <img src={card.image} alt="Case visual" style={styles.image} />
-          </div>
-        )}
         
-        <h3 style={{ fontSize: '18px', lineHeight: 1.4, marginBottom: '8px' }}>{card.q}</h3>
-        <p style={{ color: 'var(--text-muted)', lineHeight: 1.5, fontSize: '14px', marginBottom: '20px' }}>{card.desc}</p>
-        
-        {/* QUESTION TYPE LOGIC */}
-        {card.type === 'probability_grid' ? (
-          <div style={styles.gridContainer}>
-            <div style={{ ...styles.totalCounter, color: totalProb === 100 ? '#10B981' : 'var(--text-muted)' }}>
-               Total Probability: {totalProb}%
+        {/* ENLARGED FOCUSED VIEWER */}
+        <div 
+          style={styles.viewerFrame}
+          onMouseDown={handleStart}
+          onMouseMove={handleMove}
+          onMouseUp={handleEnd}
+          onMouseLeave={handleEnd}
+          onTouchStart={handleStart}
+          onTouchMove={handleMove}
+          onTouchEnd={handleEnd}
+        >
+          <div style={{
+            ...styles.imageContainer,
+            transform: `scale(${zoom}) translate(${offset.x / zoom}px, ${offset.y / zoom}px)`,
+            cursor: zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default'
+          }}>
+            <img 
+              src={currentImages[activeImgIndex]} 
+              alt="Clinical View" 
+              style={styles.mainImage} 
+              draggable="false"
+            />
+          </div>
+          
+          {currentImages.length > 1 && zoom === 1 && (
+            <div style={styles.navOverlay}>
+              <button style={styles.sideBtn} onClick={() => handleNav('prev')}><ChevronLeft size={32} /></button>
+              <button style={styles.sideBtn} onClick={() => handleNav('next')}><ChevronRight size={32} /></button>
             </div>
-            {card.options.map((opt, i) => (
-              <div key={i} style={styles.gridRow}>
-                <span style={styles.gridLabel}>{opt}</span>
-                <input 
-                  type="number" 
-                  min="0" max="100"
-                  value={probabilities[opt]}
-                  onChange={(e) => handleProbChange(opt, e.target.value)}
-                  style={styles.gridInput}
-                />
-                <span style={{ fontSize: '14px', marginLeft: '4px' }}>%</span>
-              </div>
-            ))}
-            <button 
-              className="button-primary" 
-              style={{ marginTop: '20px', width: '100%', padding: '14px' }}
-              onClick={() => handleSelect(probabilities)}
-              disabled={totalProb === 0}
-            >
-              Submit Probabilities
-            </button>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: 'auto' }}>
-            {card.options.map((opt, i) => (
-              <button key={i} style={styles.optionBtn} onClick={() => handleSelect(opt)}>
-                <div style={styles.optionLabel}>{String.fromCharCode(65 + i)}</div>
-                <span>{opt}</span>
-              </button>
-            ))}
-          </div>
-        )}
+          )}
 
-        {isSuccessAnim && (
-          <div style={styles.successOverlay}>
-            <CheckCircle size={80} color="var(--accent-cyan)" />
+          <div style={styles.controlsRow}>
+            <div style={styles.badge}>View {activeImgIndex + 1}/{currentImages.length}</div>
+            <div style={styles.zoomGroup}>
+              <button onClick={handleZoomOut} style={styles.zoomBtn}><ZoomOut size={18}/></button>
+              <button onClick={handleZoomIn} style={styles.zoomBtn}><ZoomIn size={18}/></button>
+              <button onClick={resetViewer} style={styles.zoomBtn}><RotateCcw size={18}/></button>
+            </div>
           </div>
-        )}
+        </div>
+        
+        <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '16px 0 8px' }}>{card.q}</h3>
+        <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '20px' }}>{card.desc}</p>
+        
+        {/* PROBABILITY GRID */}
+        <div style={styles.gridContainer}>
+          <div style={{ ...styles.totalCounter, color: totalProb === 100 ? '#10B981' : '#F59E0B' }}>
+             Total Study Probability: {totalProb}%
+          </div>
+          {card.options.map((opt, i) => (
+            <div key={i} style={styles.gridRow}>
+              <span style={styles.gridLabel}>{opt}</span>
+              <input 
+                type="number" 
+                value={probabilities[opt] || 0}
+                onChange={(e) => handleProbChange(opt, e.target.value)}
+                style={styles.gridInput}
+              />
+              <span style={{ fontSize: '14px', marginLeft: '6px' }}>%</span>
+            </div>
+          ))}
+          <button 
+            className="button-primary" 
+            style={styles.submitBtn}
+            onClick={() => handleSelect(probabilities)}
+            disabled={totalProb === 0}
+          >
+            Submit Professional Evaluation
+          </button>
+        </div>
       </div>
     </main>
   )
 }
 
 const styles = {
-  center: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' },
+  center: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '80vh' },
+  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' },
   backBtn: { background: 'none', border: 'none', cursor: 'pointer' },
-  pill: {
-    background: 'var(--surface-cyan)',
-    padding: '6px 16px',
+  pill: { background: 'var(--surface-cyan)', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, color: 'var(--accent-cyan-dark)' },
+  cardContainer: { padding: '20px', background: '#FFF', borderRadius: '24px', boxShadow: 'var(--shadow-soft)' },
+  viewerFrame: {
+    width: '100%', 
+    height: '500px', // INCREASED VERTICAL SIZE
+    maxHeight: '60vh', // Mobile safeguard
+    background: '#0F172A', 
     borderRadius: '20px',
-    fontSize: '12px',
-    fontWeight: 600,
-    color: 'var(--accent-cyan-dark)',
-    fontFamily: 'Inter',
-    border: '1px solid rgba(34, 211, 238, 0.18)'
+    position: 'relative', 
+    overflow: 'hidden', 
+    touchAction: 'none'
   },
-  cardContainer: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '24px',
-    position: 'relative',
-    background: 'linear-gradient(180deg, #FFFFFF 0%, #FBFBFC 100%)',
-    boxShadow: 'var(--shadow-soft)',
-    minHeight: 'fit-content'
-  },
-  imageWrapper: { width: '100%', height: '220px', borderRadius: '16px', overflow: 'hidden', marginBottom: '20px' },
-  multiImageContainer: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '20px' },
-  smallImageWrapper: { position: 'relative', height: '100px', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--glass-border)' },
-  imageLabel: { position: 'absolute', bottom: '4px', left: '4px', background: 'rgba(0,0,0,0.5)', color: 'white', fontSize: '10px', padding: '2px 6px', borderRadius: '4px' },
-  image: { width: '100%', height: '100%', objectFit: 'cover' },
-  optionBtn: { 
-    display: 'flex', alignItems: 'center', padding: '16px', borderRadius: '16px',
-    background: 'var(--surface-neutral)', border: '1px solid var(--glass-border)',
-    color: 'var(--text-main)', fontSize: '15px', fontWeight: 500, cursor: 'pointer',
-    textAlign: 'left', fontFamily: 'Inter'
-  },
-  optionLabel: {
-    width: '28px', height: '28px', borderRadius: '8px', background: 'var(--surface-cream)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '16px',
-    fontFamily: 'Outfit', fontWeight: 700, color: 'var(--accent-gold)'
-  },
-  gridContainer: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  gridRow: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--surface-neutral)', borderRadius: '12px' },
-  gridLabel: { fontSize: '14px', flex: 1, fontWeight: 500 },
-  gridInput: { width: '60px', padding: '8px', borderRadius: '8px', border: '1px solid var(--glass-border)', textAlign: 'right', fontFamily: 'Inter', fontWeight: 600 },
-  totalCounter: { textAlign: 'right', fontSize: '13px', fontWeight: 700, marginBottom: '8px' },
-  successOverlay: {
+  imageContainer: { width: '100%', height: '100%', transition: 'transform 0.1s ease-out' },
+  mainImage: { width: '100%', height: '100%', objectFit: 'contain', userSelect: 'none' },
+  navOverlay: {
     position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-    background: 'linear-gradient(135deg, rgba(34, 211, 238, 0.16) 0%, rgba(255, 255, 255, 0.78) 100%)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    animation: 'fadeIn 0.2s', zIndex: 10
-  }
+    display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 10px',
+    pointerEvents: 'none'
+  },
+  sideBtn: {
+    width: '50px', height: '50px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)',
+    border: 'none', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    cursor: 'pointer', pointerEvents: 'auto', backdropFilter: 'blur(4px)'
+  },
+  controlsRow: {
+    position: 'absolute', bottom: '12px', left: '12px', right: '12px',
+    display: 'flex', justifyContent: 'space-between', alignItems: 'center', pointerEvents: 'none'
+  },
+  badge: { background: 'rgba(0,0,0,0.6)', color: '#fff', padding: '5px 12px', borderRadius: '12px', fontSize: '11px' },
+  zoomGroup: { display: 'flex', gap: '8px', pointerEvents: 'auto' },
+  zoomBtn: { 
+    width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.9)', 
+    border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
+  },
+  gridContainer: { display: 'flex', flexDirection: 'column', gap: '6px' },
+  gridRow: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#F8FAFC', borderRadius: '14px' },
+  gridLabel: { fontSize: '14px', fontWeight: 500, color: '#334155' },
+  gridInput: { width: '60px', padding: '8px', borderRadius: '10px', border: '1px solid #E2E8F0', textAlign: 'right', fontWeight: 700 },
+  totalCounter: { textAlign: 'right', fontSize: '14px', fontWeight: 800, marginBottom: '8px' },
+  submitBtn: { marginTop: '20px', width: '100%', padding: '18px', borderRadius: '18px', fontWeight: 700, fontSize: '16px' }
 }

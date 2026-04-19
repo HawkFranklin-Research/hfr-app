@@ -15,103 +15,20 @@ def utc_now() -> str:
 SEED_PROJECTS = [
     {
         "id": "derma_ai",
-        "name": "Derma AI",
-        "shortDescription": "Case-based dermatology labeling and review feed.",
-        "longDescription": "Structured dermoscopy and lesion review cases for clinicians. This stream is intended for annotation quality checks, differential capture, and model evaluation against real-world review behavior.",
-        "consentText": "By continuing, you agree that your answers and any case-level interpretation you submit may be used for internal research, model evaluation, and dataset quality improvement. No patient identifiers should be entered into the response fields.",
-        "accentHex": "#C9722B",
-        "logoKey": "derma",
-        "questionCount": 3,
-        "liveStatus": "Live dataset collection",
-    },
-    {
-        "id": "telemedicine",
-        "name": "Telemedicine",
-        "shortDescription": "Remote triage reasoning and clinician handoff practice.",
-        "longDescription": "Telemedicine scenarios focused on response urgency, remote escalation, and concise clinician-to-clinician summaries. This stream is designed for quality review on digital-first workflows.",
-        "consentText": "By continuing, you agree that your triage choices, response timing estimates, and handoff notes may be collected for internal workflow research and operations analysis. Do not include direct patient identifiers in your answers.",
-        "accentHex": "#2F6CE5",
-        "logoKey": "telemedicine",
-        "questionCount": 3,
-        "liveStatus": "Pilot workflow live",
-    },
-    {
-        "id": "clinical_nov13",
-        "name": "Clinical Evaluation Nov13",
-        "shortDescription": "High-resolution case evaluation for specific disease differentials.",
+        "name": "Dermatology AI",
+        "shortDescription": "Official clinical evaluation for disease differentials (Nov13 set).",
         "longDescription": "Professional clinical evaluation set using high-resolution images. Clinicians are asked to provide probability weights across 10 common skin conditions based on three distinct photographic views.",
         "consentText": "By continuing, you agree to provide your professional medical opinion for these cases. This data will be used to benchmark clinical reasoning and model performance. All data is anonymized.",
         "accentHex": "#D9A441",
-        "logoKey": "cardio",
+        "logoKey": "derma",
         "questionCount": 10,
         "liveStatus": "Official Clinical Test",
-    },
+    }
 ]
 
+# Mapping the 10 real cases to the new project ID 'derma_ai'
 SEED_QUESTIONNAIRES = {
     "derma_ai": [
-        {
-            "id": "derma-1",
-            "title": "Primary pattern match",
-            "prompt": "Which option best matches the visible lesion pattern shown in the case images?",
-            "helper": "This mirrors the structured case collection used by the Android app.",
-            "type": "multiple_choice",
-            "options": [
-                "A. Atopic dermatitis / eczema flare",
-                "B. Psoriatic plaque morphology",
-                "C. Tinea corporis ring pattern",
-                "D. Herpes zoster distribution",
-            ],
-        },
-        {
-            "id": "derma-2",
-            "title": "Estimated duration",
-            "prompt": "How many days has this lesion pattern likely been active?",
-            "helper": "Use a whole number of days.",
-            "type": "numeric",
-            "options": [],
-        },
-        {
-            "id": "derma-3",
-            "title": "Differential note",
-            "prompt": "Write the concise differential note you would attach for downstream review.",
-            "helper": "Use one or two sentences.",
-            "type": "text",
-            "options": [],
-        },
-    ],
-    "telemedicine": [
-        {
-            "id": "tm-1",
-            "title": "Referral urgency",
-            "prompt": "How urgent is this telemedicine case based on the symptom timing and summary?",
-            "helper": "Choose the level that best reflects the next clinical action.",
-            "type": "multiple_choice",
-            "options": [
-                "A. Immediate same-day clinician response",
-                "B. Response within 24 hours",
-                "C. Routine follow-up within 72 hours",
-                "D. Educational guidance only",
-            ],
-        },
-        {
-            "id": "tm-2",
-            "title": "Expected callback window",
-            "prompt": "Enter the maximum callback window in hours before the case becomes overdue.",
-            "helper": "Use a numeric value.",
-            "type": "numeric",
-            "options": [],
-        },
-        {
-            "id": "tm-3",
-            "title": "Consult note",
-            "prompt": "Write the handoff note another clinician should read before opening the chart.",
-            "helper": "Focus on triage logic and what should happen next.",
-            "type": "text",
-            "options": [],
-        },
-    ],
-    "clinical_nov13": [
         {
             "id": "clin-nov13-1",
             "title": "Case #1",
@@ -123,18 +40,7 @@ SEED_QUESTIONNAIRES = {
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_1_folliculitis%2Fview_2.png?alt=media",
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_1_folliculitis%2Fview_3.png?alt=media"
             ],
-            "options": [
-                "Folliculitis",
-                "Psoriasis",
-                "Tinea",
-                "Urticaria",
-                "Herpes Zoster",
-                "Drug Rash",
-                "Insect Bite",
-                "Irritant Contact Dermatitis",
-                "Allergic Contact Dermatitis",
-                "Eczema"
-            ],
+            "options": ["Folliculitis", "Psoriasis", "Tinea", "Urticaria", "Herpes Zoster", "Drug Rash", "Insect Bite", "Irritant Contact Dermatitis", "Allergic Contact Dermatitis", "Eczema"],
             "patientCode": "-1499518133606453111"
         },
         {
@@ -148,18 +54,7 @@ SEED_QUESTIONNAIRES = {
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_2_psoriasis%2Fview_2.png?alt=media",
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_2_psoriasis%2Fview_3.png?alt=media"
             ],
-            "options": [
-                "Folliculitis",
-                "Psoriasis",
-                "Tinea",
-                "Urticaria",
-                "Herpes Zoster",
-                "Drug Rash",
-                "Insect Bite",
-                "Irritant Contact Dermatitis",
-                "Allergic Contact Dermatitis",
-                "Eczema"
-            ],
+            "options": ["Folliculitis", "Psoriasis", "Tinea", "Urticaria", "Herpes Zoster", "Drug Rash", "Insect Bite", "Irritant Contact Dermatitis", "Allergic Contact Dermatitis", "Eczema"],
             "patientCode": "-1101392520794914783"
         },
         {
@@ -173,18 +68,7 @@ SEED_QUESTIONNAIRES = {
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_3_tinea%2Fview_2.png?alt=media",
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_3_tinea%2Fview_3.png?alt=media"
             ],
-            "options": [
-                "Folliculitis",
-                "Psoriasis",
-                "Tinea",
-                "Urticaria",
-                "Herpes Zoster",
-                "Drug Rash",
-                "Insect Bite",
-                "Irritant Contact Dermatitis",
-                "Allergic Contact Dermatitis",
-                "Eczema"
-            ],
+            "options": ["Folliculitis", "Psoriasis", "Tinea", "Urticaria", "Herpes Zoster", "Drug Rash", "Insect Bite", "Irritant Contact Dermatitis", "Allergic Contact Dermatitis", "Eczema"],
             "patientCode": "-460018212599407689"
         },
         {
@@ -198,18 +82,7 @@ SEED_QUESTIONNAIRES = {
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_4_urticaria%2Fview_2.png?alt=media",
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_4_urticaria%2Fview_3.png?alt=media"
             ],
-            "options": [
-                "Folliculitis",
-                "Psoriasis",
-                "Tinea",
-                "Urticaria",
-                "Herpes Zoster",
-                "Drug Rash",
-                "Insect Bite",
-                "Irritant Contact Dermatitis",
-                "Allergic Contact Dermatitis",
-                "Eczema"
-            ],
+            "options": ["Folliculitis", "Psoriasis", "Tinea", "Urticaria", "Herpes Zoster", "Drug Rash", "Insect Bite", "Irritant Contact Dermatitis", "Allergic Contact Dermatitis", "Eczema"],
             "patientCode": "-1073544188024944010"
         },
         {
@@ -223,18 +96,7 @@ SEED_QUESTIONNAIRES = {
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_5_herpes_zoster%2Fview_2.png?alt=media",
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_5_herpes_zoster%2Fview_3.png?alt=media"
             ],
-            "options": [
-                "Folliculitis",
-                "Psoriasis",
-                "Tinea",
-                "Urticaria",
-                "Herpes Zoster",
-                "Drug Rash",
-                "Insect Bite",
-                "Irritant Contact Dermatitis",
-                "Allergic Contact Dermatitis",
-                "Eczema"
-            ],
+            "options": ["Folliculitis", "Psoriasis", "Tinea", "Urticaria", "Herpes Zoster", "Drug Rash", "Insect Bite", "Irritant Contact Dermatitis", "Allergic Contact Dermatitis", "Eczema"],
             "patientCode": "-2994712363562385732"
         },
         {
@@ -248,18 +110,7 @@ SEED_QUESTIONNAIRES = {
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_6_folliculitis%2Fview_2.png?alt=media",
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_6_folliculitis%2Fview_3.png?alt=media"
             ],
-            "options": [
-                "Folliculitis",
-                "Psoriasis",
-                "Tinea",
-                "Urticaria",
-                "Herpes Zoster",
-                "Drug Rash",
-                "Insect Bite",
-                "Irritant Contact Dermatitis",
-                "Allergic Contact Dermatitis",
-                "Eczema"
-            ],
+            "options": ["Folliculitis", "Psoriasis", "Tinea", "Urticaria", "Herpes Zoster", "Drug Rash", "Insect Bite", "Irritant Contact Dermatitis", "Allergic Contact Dermatitis", "Eczema"],
             "patientCode": "-1679661288171171796"
         },
         {
@@ -273,18 +124,7 @@ SEED_QUESTIONNAIRES = {
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_7_drug_rash%2Fview_2.png?alt=media",
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_7_drug_rash%2Fview_3.png?alt=media"
             ],
-            "options": [
-                "Folliculitis",
-                "Psoriasis",
-                "Tinea",
-                "Urticaria",
-                "Herpes Zoster",
-                "Drug Rash",
-                "Insect Bite",
-                "Irritant Contact Dermatitis",
-                "Allergic Contact Dermatitis",
-                "Eczema"
-            ],
+            "options": ["Folliculitis", "Psoriasis", "Tinea", "Urticaria", "Herpes Zoster", "Drug Rash", "Insect Bite", "Irritant Contact Dermatitis", "Allergic Contact Dermatitis", "Eczema"],
             "patientCode": "-194017562508969044"
         },
         {
@@ -298,18 +138,7 @@ SEED_QUESTIONNAIRES = {
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_8_insect_bite%2Fview_2.png?alt=media",
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_8_insect_bite%2Fview_3.png?alt=media"
             ],
-            "options": [
-                "Folliculitis",
-                "Psoriasis",
-                "Tinea",
-                "Urticaria",
-                "Herpes Zoster",
-                "Drug Rash",
-                "Insect Bite",
-                "Irritant Contact Dermatitis",
-                "Allergic Contact Dermatitis",
-                "Eczema"
-            ],
+            "options": ["Folliculitis", "Psoriasis", "Tinea", "Urticaria", "Herpes Zoster", "Drug Rash", "Insect Bite", "Irritant Contact Dermatitis", "Allergic Contact Dermatitis", "Eczema"],
             "patientCode": "-1248246033945054233"
         },
         {
@@ -323,18 +152,7 @@ SEED_QUESTIONNAIRES = {
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_9_psoriasis%2Fview_2.png?alt=media",
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_9_psoriasis%2Fview_3.png?alt=media"
             ],
-            "options": [
-                "Folliculitis",
-                "Psoriasis",
-                "Tinea",
-                "Urticaria",
-                "Herpes Zoster",
-                "Drug Rash",
-                "Insect Bite",
-                "Irritant Contact Dermatitis",
-                "Allergic Contact Dermatitis",
-                "Eczema"
-            ],
+            "options": ["Folliculitis", "Psoriasis", "Tinea", "Urticaria", "Herpes Zoster", "Drug Rash", "Insect Bite", "Irritant Contact Dermatitis", "Allergic Contact Dermatitis", "Eczema"],
             "patientCode": "-1964801097019886136"
         },
         {
@@ -348,21 +166,10 @@ SEED_QUESTIONNAIRES = {
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_10_irritant_contact_dermatitis%2Fview_2.png?alt=media",
                 "https://firebasestorage.googleapis.com/v0/b/hfr-app-6c756.firebasestorage.app/o/cases%2Fcase_10_irritant_contact_dermatitis%2Fview_3.png?alt=media"
             ],
-            "options": [
-                "Folliculitis",
-                "Psoriasis",
-                "Tinea",
-                "Urticaria",
-                "Herpes Zoster",
-                "Drug Rash",
-                "Insect Bite",
-                "Irritant Contact Dermatitis",
-                "Allergic Contact Dermatitis",
-                "Eczema"
-            ],
+            "options": ["Folliculitis", "Psoriasis", "Tinea", "Urticaria", "Herpes Zoster", "Drug Rash", "Insect Bite", "Irritant Contact Dermatitis", "Allergic Contact Dermatitis", "Eczema"],
             "patientCode": "-4920504467922873434"
         }
-    ],
+    ]
 }
 
 
@@ -477,12 +284,13 @@ class FirestoreStore:
         return {"uid": uid, **payload}
 
     def list_projects(self) -> list[dict[str, Any]]:
+        # Clear projects in DB first or just overwrite? Let's assume we want to sync
         docs = list(self.projects.stream())
-        if not docs:
-            for project in SEED_PROJECTS:
-                self.projects.document(project["id"]).set(project)
-            return SEED_PROJECTS
-        return [{"id": doc.id, **doc.to_dict()} for doc in docs]
+        # To strictly enforce our NEW set of projects, we should ideally clear the old ones
+        # but for safety, we just push our current SEED_PROJECTS
+        for project in SEED_PROJECTS:
+            self.projects.document(project["id"]).set(project)
+        return SEED_PROJECTS
 
     def get_project(self, project_id: str) -> dict[str, Any] | None:
         doc = self.projects.document(project_id).get()

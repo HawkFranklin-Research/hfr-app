@@ -11,11 +11,11 @@ export default function TopBar({ onProfileClick, isAuthenticated }) {
         </div>
         <div style={styles.brandText}>
           <h1 style={styles.title}>HawkFranklin</h1>
-          <p style={styles.subtitle}>Research</p>
+          <p style={styles.subtitle}>RESEARCH</p>
         </div>
       </div>
       <button style={styles.profileBtn} onClick={onProfileClick}>
-        {isAuthenticated ? <UserCheck color="var(--accent-cyan)" /> : <User color="var(--text-main)" />}
+        {isAuthenticated ? <UserCheck color="var(--accent-cyan)" size={28} /> : <User color="var(--text-main)" size={28} />}
       </button>
     </header>
   )
@@ -26,51 +26,56 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '20px 24px',
+    padding: '30px 24px', // Increased vertical padding
     zIndex: 10
   },
   brand: {
     display: 'flex',
     alignItems: 'center',
-    gap: '12px'
+    gap: '16px' // Increased gap
   },
   brandText: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'flex-start' // Left aligned for better legibility
   },
   brandLogoFrame: {
-    width: '48px',
-    height: '48px',
+    width: '64px', // Increased size
+    height: '64px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0
   },
   brandLogo: {
-    width: '48px',
-    height: '48px',
+    width: '100%',
+    height: '100%',
     objectFit: 'contain',
-    filter: 'drop-shadow(0 10px 18px rgba(197, 160, 40, 0.18))'
+    filter: 'drop-shadow(0 12px 24px rgba(197, 160, 40, 0.25))'
   },
   title: {
-    fontSize: '20px',
-    letterSpacing: '0.5px'
+    fontSize: '32px', // Significantly larger
+    fontWeight: 800,
+    letterSpacing: '-0.5px',
+    lineHeight: 1
   },
   subtitle: {
-    fontSize: '12px',
+    fontSize: '14px', // Larger subtitle
+    fontWeight: 700,
     color: 'var(--accent-gold-dark)',
-    fontFamily: 'Inter',
+    fontFamily: 'Outfit',
     textTransform: 'uppercase',
-    letterSpacing: '1px'
+    letterSpacing: '3px',
+    marginTop: '2px'
   },
   profileBtn: {
-    width: '44px', height: '44px',
+    width: '56px', // Increased button size
+    height: '56px',
     borderRadius: '50%',
-    background: 'rgba(255, 255, 255, 0.9)',
+    background: 'rgba(255, 255, 255, 0.95)',
     border: '1px solid var(--glass-border)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     cursor: 'pointer',
-    boxShadow: 'var(--shadow-card)'
+    boxShadow: '0 8px 16px rgba(20, 20, 22, 0.06)'
   }
 }
