@@ -51,10 +51,12 @@ function App() {
   return (
     <>
       {view === 'dashboard' && (
-        <>
+        <div className="home-screen-shell">
+          <div className="home-shell glass-panel">
           <TopBar onProfileClick={() => openSidebar('menu')} isAuthenticated={isAuthenticated} />
           <Dashboard onProjectSelect={handleProjectClick} />
-        </>
+          </div>
+        </div>
       )}
 
       {view === 'flashcards' && (
