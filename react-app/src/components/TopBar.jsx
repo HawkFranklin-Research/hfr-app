@@ -5,6 +5,18 @@ import hawkFranklinLogo from '../assets/hawkfranklin-logo.png'
 export default function TopBar({ onProfileClick, isAuthenticated }) {
   return (
     <header style={styles.header}>
+      <div style={styles.brandBlock}>
+        <div style={styles.mainRow}>
+          <div style={styles.brandLogoFrame}>
+            <img src={hawkFranklinLogo} alt="HawkFranklin" style={styles.brandLogo} />
+          </div>
+          <h1 style={styles.title}>HawkFranklin</h1>
+        </div>
+        <div style={styles.subRow}>
+          <p style={styles.subtitle}>RESEARCH</p>
+        </div>
+      </div>
+
       <button
         type="button"
         aria-label={isAuthenticated ? 'Open profile menu' : 'Open sign in menu'}
@@ -13,16 +25,6 @@ export default function TopBar({ onProfileClick, isAuthenticated }) {
       >
         <Menu color="var(--text-main)" size={22} />
       </button>
-
-      <div style={styles.brand} aria-label="HawkFranklin Research">
-        <div style={styles.brandLogoFrame}>
-          <img src={hawkFranklinLogo} alt="HawkFranklin" style={styles.brandLogo} />
-        </div>
-        <div style={styles.brandText}>
-          <h1 style={styles.title}>HawkFranklin</h1>
-          <p style={styles.subtitle}>RESEARCH</p>
-        </div>
-      </div>
     </header>
   )
 }
@@ -31,47 +33,48 @@ const styles = {
   header: {
     position: 'relative',
     display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
     padding: '36px 24px 22px',
-    textAlign: 'center',
     zIndex: 10
   },
-  brand: {
+  brandBlock: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    gap: '18px',
-    width: '100%'
+    alignItems: 'center', // This centers the subRow content (RESEARCH) relative to the mainRow
   },
-  brandText: {
+  mainRow: {
     display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    gap: '16px'
+  },
+  subRow: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: '6px'
   },
   brandLogoFrame: {
-    width: '136px',
-    height: '136px',
+    width: '84px',
+    height: '84px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-    borderRadius: '34px',
+    borderRadius: '20px',
     background: 'linear-gradient(180deg, rgba(255, 247, 230, 0.95) 0%, rgba(255, 255, 255, 0.78) 100%)',
     border: '1px solid rgba(197, 160, 40, 0.12)',
-    boxShadow: '0 22px 44px rgba(197, 160, 40, 0.16)'
+    boxShadow: '0 18px 36px rgba(197, 160, 40, 0.12)'
   },
   brandLogo: {
-    width: '76%',
-    height: '76%',
-    objectFit: 'contain',
-    filter: 'drop-shadow(0 18px 28px rgba(197, 160, 40, 0.22))'
+    width: '80%',
+    height: '80%',
+    objectFit: 'contain'
   },
   title: {
-    fontSize: 'clamp(34px, 7vw, 46px)',
+    fontSize: '32px',
     fontWeight: 800,
-    letterSpacing: '-1.4px',
+    letterSpacing: '-1px',
     lineHeight: 1
   },
   subtitle: {
@@ -80,15 +83,11 @@ const styles = {
     color: 'var(--accent-gold-dark)',
     fontFamily: 'Outfit',
     textTransform: 'uppercase',
-    letterSpacing: '7px',
-    marginTop: '8px',
-    width: '100%',
-    textAlign: 'center'
+    letterSpacing: '8px',
+    textAlign: 'center',
+    margin: 0
   },
   profileBtn: {
-    position: 'absolute',
-    top: '24px',
-    right: '24px',
     width: '52px',
     height: '52px',
     borderRadius: '16px',
@@ -96,6 +95,6 @@ const styles = {
     border: '1px solid rgba(20, 20, 22, 0.06)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     cursor: 'pointer',
-    boxShadow: '0 12px 24px rgba(20, 20, 22, 0.08)'
+    boxShadow: '0 8px 16px rgba(20, 20, 22, 0.06)'
   }
 }

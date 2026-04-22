@@ -33,13 +33,6 @@ export default function Dashboard({ onProjectSelect }) {
     fetchProjects()
   }, [])
 
-  const renderIcon = (proj) => {
-    if (proj.id === 'derma_ai' || proj.logoKey === 'derma') {
-      return <img src={pelliscopeLogo} alt="Pelliscope" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
-    }
-    return <Microscope size={28} color="#D9A441" />
-  }
-
   if (loading) {
     return (
       <main className="view-container dashboard-view">
@@ -52,14 +45,6 @@ export default function Dashboard({ onProjectSelect }) {
 
   return (
     <main className="view-container dashboard-view">
-      <section style={styles.intro}>
-        <p style={styles.kicker}>Active project</p>
-        <h2 style={styles.heading}>Clinical AI screening, centered for mobile-first review.</h2>
-        <p style={styles.copy}>
-          Select the live HawkFranklin study below to open the Dermatology AI evaluation flow.
-        </p>
-      </section>
-
       <div style={styles.grid}>
         {projects.map(proj => (
           <button
@@ -69,23 +54,19 @@ export default function Dashboard({ onProjectSelect }) {
             style={styles.tile}
             onClick={() => onProjectSelect(proj.name || proj.id)}
           >
-            <div style={styles.tileTop}>
-              <p style={styles.projectEyebrow}>Project</p>
-              <h3 style={styles.projectTitle}>{proj.name}</h3>
-              <p style={styles.projectCopy}>
-                {proj.shortDescription || 'Clinical study validation workflow for dermatologist-led review.'}
-              </p>
+            <div style={styles.tileMain}>
+              <div style={{ ...styles.iconWrapper, background: proj.iconBg || 'var(--surface-cream-strong)' }}>
+                 <img src={pelliscopeLogo} alt="Pelliscope" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+              </div>
+              <div style={styles.tileText}>
+                <p style={styles.projectEyebrow}>Active Study</p>
+                <h3 style={styles.projectTitle}>{proj.name}</h3>
+              </div>
             </div>
 
-            <div style={styles.banner}>
-              <div style={{ ...styles.iconWrapper, background: proj.iconBg || 'var(--surface-cream-strong)' }}>
-                {renderIcon(proj)}
-              </div>
-              <div style={styles.bannerText}>
-                <span style={styles.bannerLabel}>Powered by</span>
-                <span style={styles.bannerTitle}>Pelliscope</span>
-              </div>
-            </div>
+            <p style={styles.projectCopy}>
+              Clinical Validation of 10 Dermatological Conditions
+            </p>
 
             <div style={styles.tileFooter}>
               <span style={styles.tileAction}>Open evaluation flow</span>
@@ -105,80 +86,28 @@ const styles = {
     gap: '20px',
     width: '100%',
     maxWidth: '420px',
-    margin: '0 auto'
-  },
-  intro: {
-    width: '100%',
-    maxWidth: '420px',
-    margin: '0 auto 20px',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    textAlign: 'center',
-    gap: '10px'
-  },
-  kicker: {
-    fontSize: '12px',
-    fontWeight: 700,
-    letterSpacing: '0.24em',
-    textTransform: 'uppercase',
-    color: 'var(--accent-gold-dark)'
-  },
-  heading: {
-    fontSize: '28px',
-    lineHeight: 1.08,
-    letterSpacing: '-0.03em'
-  },
-  copy: {
-    fontSize: '14px',
-    lineHeight: 1.6,
-    color: 'var(--text-muted)'
+    margin: '40px auto 0' // Added margin top to replace the intro space
   },
   tile: {
-    minHeight: '260px',
+    minHeight: '220px',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'stretch',
     justifyContent: 'space-between',
-    gap: '18px',
+    gap: '24px',
     cursor: 'pointer',
     textAlign: 'left',
-    padding: '28px 24px',
+    padding: '32px 24px',
     boxShadow: '0 20px 40px rgba(0,0,0,0.06)',
     borderRadius: '28px',
     border: '1px solid rgba(20, 20, 22, 0.04)',
-    appearance: 'none'
+    appearance: 'none',
+    width: '100%'
   },
-  tileTop: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px'
-  },
-  projectEyebrow: {
-    fontSize: '11px',
-    fontWeight: 700,
-    letterSpacing: '0.18em',
-    textTransform: 'uppercase',
-    color: 'var(--text-muted)'
-  },
-  projectTitle: {
-    fontSize: '30px',
-    lineHeight: 1,
-    letterSpacing: '-0.04em'
-  },
-  projectCopy: {
-    fontSize: '14px',
-    lineHeight: 1.55,
-    color: 'var(--text-soft)'
-  },
-  banner: {
+  tileMain: {
     display: 'flex',
     alignItems: 'center',
-    gap: '16px',
-    padding: '16px 18px',
-    borderRadius: '22px',
-    background: 'rgba(255, 255, 255, 0.7)',
-    border: '1px solid rgba(20, 20, 22, 0.05)'
+    gap: '18px'
   },
   iconWrapper: {
     width: '72px',
@@ -188,30 +117,35 @@ const styles = {
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     flexShrink: 0
   },
-  bannerText: {
+  tileText: {
     display: 'flex',
     flexDirection: 'column',
     gap: '4px'
   },
-  bannerLabel: {
+  projectEyebrow: {
     fontSize: '11px',
     fontWeight: 700,
     letterSpacing: '0.18em',
     textTransform: 'uppercase',
-    color: 'var(--text-muted)'
+    color: 'var(--accent-gold-dark)'
   },
-  bannerTitle: {
-    fontSize: '24px',
-    fontFamily: 'Outfit, sans-serif',
-    fontWeight: 700,
+  projectTitle: {
+    fontSize: '28px',
     lineHeight: 1,
-    color: 'var(--text-main)'
+    letterSpacing: '-0.04em'
+  },
+  projectCopy: {
+    fontSize: '15px',
+    lineHeight: 1.5,
+    color: 'var(--text-soft)',
+    fontWeight: 500
   },
   tileFooter: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: '2px'
+    paddingTop: '12px',
+    borderTop: '1px solid rgba(20, 20, 22, 0.04)'
   },
   tileAction: {
     fontSize: '14px',
@@ -222,7 +156,7 @@ const styles = {
     width: '100%',
     maxWidth: '420px',
     margin: '0 auto',
-    paddingTop: '12px',
+    paddingTop: '100px',
     textAlign: 'center'
   },
   loadingText: {

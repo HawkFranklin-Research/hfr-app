@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap');
 
 :root {
   --bg-color-main: #F7F7F8;
@@ -44,8 +44,8 @@ body, html {
   font-family: 'Inter', sans-serif;
   background-color: var(--bg-color-main);
   background-image:
-    radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 420px),
-    radial-gradient(circle at bottom right, rgba(217, 164, 65, 0.12), transparent 440px),
+    radial-gradient(circle at top left, rgba(217, 164, 65, 0.18), transparent 700px), /* Sunlight from Top Left */
+    radial-gradient(circle at bottom right, rgba(34, 211, 238, 0.1), transparent 500px),
     linear-gradient(180deg, #FBFBFC 0%, #F3F4F6 100%);
   color: var(--text-main);
   overflow: hidden;
@@ -137,7 +137,7 @@ h1, h2, h3, h4 {
   flex-direction: column;
   overflow: hidden;
   background:
-    radial-gradient(circle at top center, rgba(217, 164, 65, 0.12), transparent 260px),
+    radial-gradient(circle at top left, rgba(217, 164, 65, 0.18), transparent 450px), /* Sunlight from Top Left */
     linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(248, 248, 249, 0.9) 100%);
 }
 

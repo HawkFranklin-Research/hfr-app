@@ -41,18 +41,14 @@ export default function FlashcardEngine({ project, onExit }) {
     fetchCases()
   }, [project])
 
-  // NEW: Pre-fetching "Liquid Smooth" Logic
+  // Pre-fetching Logic
   useEffect(() => {
     if (!cards[index]) return;
-    
-    // 1. Preload ALL images for the current case
     const currentImages = cards[index].images || [];
     currentImages.forEach(url => {
       const img = new Image();
       img.src = url;
     });
-
-    // 2. Preload the first view of the NEXT case
     const nextCard = cards[index + 1];
     if (nextCard && nextCard.images && nextCard.images.length > 0) {
       const nextImg = new Image();
@@ -85,14 +81,11 @@ export default function FlashcardEngine({ project, onExit }) {
 
   const handleMove = (e) => {
     if (!isDragging || zoom === 1) return
+    e.preventDefault() 
     const touch = e.touches ? e.touches[0] : e
     const deltaX = touch.clientX - lastPos.x
     const deltaY = touch.clientY - lastPos.y
-    
-    setOffset(prev => ({
-      x: prev.x + deltaX,
-      y: prev.y + deltaY
-    }))
+    setOffset(prev => ({ x: prev.x + deltaX, y: prev.y + deltaY }))
     setLastPos({ x: touch.clientX, y: touch.clientY })
   }
 
@@ -101,14 +94,9 @@ export default function FlashcardEngine({ project, onExit }) {
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.5, 1))
 
   const handleNav = (dir) => {
-    const card = cards[index]
-    const currentImages = card.images.length > 0 ? card.images : (card.image ? [card.image] : [])
     resetViewer()
-    if (dir === 'next') {
-      setActiveImgIndex(prev => (prev === currentImages.length - 1 ? 0 : prev + 1))
-    } else {
-      setActiveImgIndex(prev => (prev === 0 ? currentImages.length - 1 : prev - 1))
-    }
+    if (dir === 'next') setActiveImgIndex(prev => (prev === cards[index].images.length - 1 ? 0 : prev + 1))
+    else setActiveImgIndex(prev => (prev === 0 ? cards[index].images.length - 1 : prev - 1))
   }
 
   const handleProbChange = (disease, val) => {
@@ -134,7 +122,7 @@ export default function FlashcardEngine({ project, onExit }) {
     setTimeout(() => {
       setIsSuccessAnim(false)
       if (index < cards.length - 1) setIndex(prev => prev + 1)
-      else { alert("Evaluation complete!"); onExit() }
+      else { alert("Complete!"); onExit() }
     }, 800)
   }
 
@@ -168,12 +156,7 @@ export default function FlashcardEngine({ project, onExit }) {
             transform: `scale(${zoom}) translate(${offset.x / zoom}px, ${offset.y / zoom}px)`,
             cursor: zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default'
           }}>
-            <img 
-              src={currentImages[activeImgIndex]} 
-              alt="Clinical View" 
-              style={styles.mainImage} 
-              draggable="false"
-            />
+            <img src={currentImages[activeImgIndex]} alt="Clinical View" style={styles.mainImage} draggable="false" />
           </div>
           
           {currentImages.length > 1 && zoom === 1 && (
@@ -196,20 +179,24 @@ export default function FlashcardEngine({ project, onExit }) {
         <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '16px 0 8px' }}>{card.q}</h3>
         <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '20px' }}>{card.desc}</p>
         
+        {/* NEW: PROBABILITY SLIDERS */}
         <div style={styles.gridContainer}>
           <div style={{ ...styles.totalCounter, color: totalProb === 100 ? '#10B981' : '#F59E0B' }}>
              Total Study Probability: {totalProb}%
           </div>
           {card.options.map((opt, i) => (
-            <div key={i} style={styles.gridRow}>
-              <span style={styles.gridLabel}>{opt}</span>
+            <div key={i} style={styles.sliderRow}>
+              <div style={styles.sliderInfo}>
+                <span style={styles.sliderLabel}>{opt}</span>
+                <span style={styles.sliderVal}>{probabilities[opt] || 0}%</span>
+              </div>
               <input 
-                type="number" 
+                type="range" 
+                min="0" max="100" step="1"
                 value={probabilities[opt] || 0}
                 onChange={(e) => handleProbChange(opt, e.target.value)}
-                style={styles.gridInput}
+                style={styles.sliderInput}
               />
-              <span style={{ fontSize: '14px', marginLeft: '6px' }}>%</span>
             </div>
           ))}
           <button 
@@ -259,10 +246,26 @@ const styles = {
     border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
     boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
   },
-  gridContainer: { display: 'flex', flexDirection: 'column', gap: '6px' },
-  gridRow: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#F8FAFC', borderRadius: '14px' },
-  gridLabel: { fontSize: '14px', fontWeight: 500, color: '#334155' },
-  gridInput: { width: '60px', padding: '8px', borderRadius: '10px', border: '1px solid #E2E8F0', textAlign: 'right', fontWeight: 700 },
+  gridContainer: { display: 'flex', flexDirection: 'column', gap: '8px' },
+  sliderRow: { 
+    display: 'flex', flexDirection: 'column', gap: '8px',
+    padding: '14px', background: '#F8FAFC', borderRadius: '18px',
+    border: '1px solid rgba(0,0,0,0.02)'
+  },
+  sliderInfo: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+  sliderLabel: { fontSize: '14px', fontWeight: 600, color: '#334155' },
+  sliderVal: { fontSize: '14px', fontWeight: 800, color: 'var(--accent-cyan-dark)' },
+  sliderInput: {
+    width: '100%', height: '6px', borderRadius: '5px',
+    background: '#E2E8F0', outline: 'none', appearance: 'none',
+    cursor: 'pointer'
+  },
   totalCounter: { textAlign: 'right', fontSize: '14px', fontWeight: 800, marginBottom: '8px' },
-  submitBtn: { marginTop: '20px', width: '100%', padding: '18px', borderRadius: '18px', fontWeight: 700, fontSize: '16px' }
+  submitBtn: { marginTop: '20px', width: '100%', padding: '18px', borderRadius: '18px', fontWeight: 700, fontSize: '16px' },
+  successOverlay: {
+    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+    background: 'rgba(255, 255, 255, 0.9)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    animation: 'fadeIn 0.2s', zIndex: 20, borderRadius: '24px'
+  }
 }
